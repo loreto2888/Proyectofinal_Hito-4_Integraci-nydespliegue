@@ -1,0 +1,48 @@
+Descripcion de Producto
+
+Nombre del producto
+Aplicacion web de compra y venta de articulos.
+
+Objetivo
+Permitir a los usuarios registrarse, iniciar sesion, publicar articulos en venta, ver publicaciones disponibles, agregar productos al carrito y simular una compra.
+
+Flujo principal de uso
+1. El usuario ingresa a la aplicacion mediante la URL local.
+2. Si ya tiene cuenta, debe poder iniciar sesion.
+3. Si no tiene cuenta, debe dirigirse al registro.
+4. Una vez registrado o autenticado, accede a la pagina principal con su sesion iniciada.
+
+Funciones principales
+
+1. Registro e inicio de sesion
+- El sistema debe permitir registrar usuarios con nombre y contrasena.
+- El boton `Iniciar sesion` debe estar orientado a usuarios ya registrados.
+- Si el usuario no esta registrado, debe existir acceso claro a la opcion `Registro`.
+- El boton `Cerrar sesion` debe finalizar la sesion y redirigir al login.
+
+2. Pagina principal
+- Debe mostrar al usuario autenticado el menu principal.
+- Cada pagina debe incluir un boton `Volver al menu principal`.
+
+3. Publicaciones de venta
+- El usuario debe poder crear publicaciones de venta.
+- Cada publicacion debe permitir ingresar:
+  - Articulo
+  - Precio
+  - Descripcion
+  - Foto
+- En la seccion de publicaciones se debe poder:
+  - Ver el listado de publicaciones
+  - Ver el detalle de cada publicacion
+  - Agregar productos al carrito
+  - Eliminar productos del carrito
+  - Simular una compra o pago
+
+4. Gestion de publicaciones
+- En la pantalla de crear publicaciones debe existir la opcion de:
+  - Editar publicaciones
+  - Eliminar publicaciones
+
+Navegacion
+- Debe existir un boton para volver a la pagina principal o menu principal desde cada seccion.
+- En la vista de creacion de publicaciones tambien debe existir un boton `Volver a pagina principal`.
