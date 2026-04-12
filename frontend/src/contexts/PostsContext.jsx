@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { createPost, fetchPosts, updatePost as updatePostRequest } from '../services/postsService'
+import { createPost, deletePost as deletePostRequest, fetchPosts, updatePost as updatePostRequest } from '../services/postsService'
 
 const PostsContext = createContext()
 
@@ -52,9 +52,14 @@ export function PostsProvider({ children }) {
     return updated
   }
 
+  const deletePost = async (id, token) => {
+    await deletePostRequest(id, token)
+    setPosts((prev) => prev.filter((currentPost) => String(currentPost.id) !== String(id)))
+  }
+
   const getPostById = (id) => posts.find((p) => String(p.id) === String(id))
 
-  const value = { posts, loading, addPost, updatePost, getPostById, refreshPosts }
+  const value = { posts, loading, addPost, updatePost, deletePost, getPostById, refreshPosts }
 
   return <PostsContext.Provider value={value}>{children}</PostsContext.Provider>
 }

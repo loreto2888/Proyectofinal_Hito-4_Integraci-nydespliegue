@@ -1,13 +1,38 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { usePosts } from '../contexts/PostsContext'
 import { PostCard } from '../components/common/PostCard'
 
 export function Profile() {
-  const { user } = useAuth()
-  const { posts } = usePosts()
+  const { user, token } = useAuth()
+  const { posts, deletePost } = usePosts()
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
+  const [deletingId, setDeletingId] = useState(null)
 
   const myPosts = posts.filter((p) => String(p.user?.id) === String(user?.id))
+
+  const handleDelete = async (post) => {
+    const confirmed = window.confirm(`¿Seguro que quieres eliminar la publicación "${post.title}"?`)
+
+    if (!confirmed) {
+      return
+    }
+
+    setDeletingId(post.id)
+    setMessage('')
+    setError('')
+
+    try {
+      await deletePost(post.id, token)
+      setMessage('Publicación eliminada correctamente.')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   return (
     <div className="row">
@@ -39,6 +64,8 @@ export function Profile() {
             Volver al menú principal
           </Link>
         </div>
+        {message && <div className="alert alert-success">{message}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
         {myPosts.length === 0 ? (
           <p className="text-muted">Aún no has creado publicaciones.</p>
         ) : (
@@ -46,10 +73,18 @@ export function Profile() {
             {myPosts.map((post) => (
               <div className="col-md-4" key={post.id}>
                 <PostCard post={post} />
-                <div className="mt-2 d-grid">
+                <div className="mt-2 d-grid gap-2">
                   <Link to={`/posts/${post.id}/edit`} className="btn btn-sm btn-outline-warning">
                     Editar publicación
                   </Link>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-danger"
+                    disabled={deletingId === post.id}
+                    onClick={() => handleDelete(post)}
+                  >
+                    {deletingId === post.id ? 'Eliminando…' : 'Eliminar publicación'}
+                  </button>
                 </div>
               </div>
             ))}

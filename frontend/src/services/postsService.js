@@ -65,6 +65,17 @@ export async function updatePost(id, post, token) {
   return handleJsonResponse(res)
 }
 
+export async function deletePost(id, token) {
+  const res = await fetch(`${BASE_URL}/posts/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  return handleJsonResponse(res)
+}
+
 export async function fetchFavorites(token) {
   const res = await fetch(`${BASE_URL}/favorites`, {
     headers: {
