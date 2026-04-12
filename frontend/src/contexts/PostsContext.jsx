@@ -43,7 +43,7 @@ export function PostsProvider({ children }) {
               ...currentPost,
               ...updated,
               user: currentPost.user,
-              mainImage: currentPost.mainImage,
+              mainImage: updated.mainImage !== undefined ? updated.mainImage : currentPost.mainImage,
             }
           : currentPost,
       ),

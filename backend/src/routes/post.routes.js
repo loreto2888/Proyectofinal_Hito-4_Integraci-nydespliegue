@@ -223,10 +223,11 @@ router.put('/:id', requireAuth, async (req, res) => {
   const id = Number(req.params.id);
   const title = req.body?.title != null ? normalizeText(req.body.title) : null;
   const description = req.body?.description != null ? normalizeText(req.body.description) : null;
-  const { price, stock } = req.body;
+  const { price, stock, images } = req.body;
   const status = req.body?.status != null ? normalizeText(req.body.status) : null;
   const category = req.body?.category != null ? normalizeText(req.body.category) : null;
   const location = req.body?.location != null ? normalizeText(req.body.location) : null;
+  const normalizedImages = Array.isArray(images) ? images.map((image) => image.trim()) : null;
 
   if (title !== null) {
     if (!title) {
@@ -274,6 +275,17 @@ router.put('/:id', requireAuth, async (req, res) => {
     return res.status(400).json({ message: 'Selecciona una modalidad válida' });
   }
 
+  if (images != null) {
+    if (!Array.isArray(images)) {
+      return res.status(400).json({ message: 'Las imágenes deben enviarse como una lista' });
+    }
+
+    const invalidImage = normalizedImages.find((image) => !image || !isValidUrl(image));
+    if (invalidImage !== undefined) {
+      return res.status(400).json({ message: 'Cada imagen debe ser una URL válida' });
+    }
+  }
+
   const numericPrice = price != null ? Number(price) : null;
   const numericStock = stock != null ? Number(stock) : null;
 
@@ -297,7 +309,27 @@ router.put('/:id', requireAuth, async (req, res) => {
       return res.status(404).json({ message: 'Publicación no encontrada o no autorizada' });
     }
 
-    return res.json(result.rows[0]);
+    if (normalizedImages !== null) {
+      await query('DELETE FROM post_images WHERE post_id = $1', [id]);
+
+      if (normalizedImages.length > 0) {
+        const values = normalizedImages.map((_, index) => `($1, $${index + 2}, ${index + 1})`).join(',');
+        await query(
+          `INSERT INTO post_images (post_id, url, "order") VALUES ${values}`,
+          [id, ...normalizedImages]
+        );
+      }
+    }
+
+    const imagesResult = await query(
+      'SELECT url FROM post_images WHERE post_id = $1 ORDER BY "order" ASC LIMIT 1',
+      [id]
+    );
+
+    return res.json({
+      ...result.rows[0],
+      mainImage: imagesResult.rows[0]?.url || null,
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: 'Error actualizando publicación' });

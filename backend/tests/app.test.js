@@ -386,6 +386,9 @@ describe('API REST Hito 4', () => {
         },
       ])
     );
+    queryMock.mockResolvedValueOnce(dbResult([], { rowCount: 1 }));
+    queryMock.mockResolvedValueOnce(dbResult([], { rowCount: 1 }));
+    queryMock.mockResolvedValueOnce(dbResult([{ url: 'https://img.test/post-actualizado.jpg' }]));
 
     const res = await request(app)
       .put('/api/posts/5')
@@ -398,11 +401,45 @@ describe('API REST Hito 4', () => {
         status: 'sold',
         category: 'otros',
         location: 'online',
+        images: ['https://img.test/post-actualizado.jpg'],
       });
 
     expect(res.statusCode).toBe(200);
     expect(res.body.title).toBe('Título actualizado');
     expect(res.body.status).toBe('sold');
+    expect(res.body.mainImage).toBe('https://img.test/post-actualizado.jpg');
+    expect(queryMock).toHaveBeenCalledTimes(4);
+  });
+
+  test('PUT /api/posts/:id debe permitir eliminar la imagen principal', async () => {
+    queryMock
+      .mockResolvedValueOnce(
+        dbResult([
+          {
+            id: 5,
+            title: 'Título actualizado',
+            description: 'Descripción actualizada y completa',
+            price: 9990,
+            stock: 4,
+            status: 'sold',
+            category: 'otros',
+            location: 'online',
+          },
+        ])
+      )
+      .mockResolvedValueOnce(dbResult([], { rowCount: 1 }))
+      .mockResolvedValueOnce(dbResult([]));
+
+    const res = await request(app)
+      .put('/api/posts/5')
+      .set(authHeader(1))
+      .send({
+        title: 'Título actualizado',
+        images: [],
+      });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.mainImage).toBeNull();
   });
 
   test('DELETE /api/posts/:id sin token debe responder 401', async () => {

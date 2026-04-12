@@ -93,7 +93,7 @@ export function NewPost() {
       nextErrors.description = 'La descripción debe tener al menos 10 caracteres'
     }
 
-    if (!isEditMode && imageUrl.trim() && !isValidUrl(imageUrl.trim())) {
+    if (imageUrl.trim() && !isValidUrl(imageUrl.trim())) {
       nextErrors.imageUrl = 'Ingresa una URL válida para la imagen'
     }
 
@@ -221,6 +221,7 @@ export function NewPost() {
             description: normalizedDescription,
             price: numericPrice,
             stock: numericStock,
+            images: normalizedImageUrl ? [normalizedImageUrl] : [],
             status,
             category,
             location,
@@ -379,18 +380,17 @@ export function NewPost() {
                   />
                   {fieldErrors.description && <div className="invalid-feedback">{fieldErrors.description}</div>}
                 </div>
-                {!isEditMode && (
-                  <div className="col-12">
-                    <label className="form-label">Imagen URL</label>
-                    <input
-                      type="url"
-                      className={`form-control ${fieldErrors.imageUrl ? 'is-invalid' : ''}`}
-                      value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                    />
-                    {fieldErrors.imageUrl && <div className="invalid-feedback">{fieldErrors.imageUrl}</div>}
-                  </div>
-                )}
+                <div className="col-12">
+                  <label className="form-label">Imagen URL</label>
+                  <input
+                    type="url"
+                    className={`form-control ${fieldErrors.imageUrl ? 'is-invalid' : ''}`}
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                  />
+                  {fieldErrors.imageUrl && <div className="invalid-feedback">{fieldErrors.imageUrl}</div>}
+                  {isEditMode && <div className="form-text">Deja el campo vacío si quieres eliminar la imagen actual.</div>}
+                </div>
               </div>
               <div className="mt-3 d-flex gap-2">
                 <button type="submit" className="btn btn-success" disabled={submitting}>
