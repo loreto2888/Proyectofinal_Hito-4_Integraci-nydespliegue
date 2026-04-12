@@ -46,6 +46,11 @@ export function Profile() {
             {myPosts.map((post) => (
               <div className="col-md-4" key={post.id}>
                 <PostCard post={post} />
+                <div className="mt-2 d-grid">
+                  <Link to={`/posts/${post.id}/edit`} className="btn btn-sm btn-outline-warning">
+                    Editar publicación
+                  </Link>
+                </div>
               </div>
             ))}
           </div>

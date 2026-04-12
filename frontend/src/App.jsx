@@ -44,6 +44,14 @@ export default function App() {
           }
         />
         <Route
+          path="/posts/:id/edit"
+          element={
+            <PrivateRoute>
+              <NewPost />
+            </PrivateRoute>
+          }
+        />
+        <Route
           path="/posts/new"
           element={
             <PrivateRoute>

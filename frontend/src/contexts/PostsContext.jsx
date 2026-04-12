@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { createPost, fetchPosts } from '../services/postsService'
+import { createPost, fetchPosts, updatePost as updatePostRequest } from '../services/postsService'
 
 const PostsContext = createContext()
 
@@ -33,9 +33,28 @@ export function PostsProvider({ children }) {
     ])
   }
 
+  const updatePost = async (id, post, token) => {
+    const updated = await updatePostRequest(id, post, token)
+
+    setPosts((prev) =>
+      prev.map((currentPost) =>
+        String(currentPost.id) === String(id)
+          ? {
+              ...currentPost,
+              ...updated,
+              user: currentPost.user,
+              mainImage: currentPost.mainImage,
+            }
+          : currentPost,
+      ),
+    )
+
+    return updated
+  }
+
   const getPostById = (id) => posts.find((p) => String(p.id) === String(id))
 
-  const value = { posts, loading, addPost, getPostById, refreshPosts }
+  const value = { posts, loading, addPost, updatePost, getPostById, refreshPosts }
 
   return <PostsContext.Provider value={value}>{children}</PostsContext.Provider>
 }

@@ -52,6 +52,19 @@ export async function createPost(post, token) {
   return handleJsonResponse(res)
 }
 
+export async function updatePost(id, post, token) {
+  const res = await fetch(`${BASE_URL}/posts/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(post),
+  })
+
+  return handleJsonResponse(res)
+}
+
 export async function fetchFavorites(token) {
   const res = await fetch(`${BASE_URL}/favorites`, {
     headers: {

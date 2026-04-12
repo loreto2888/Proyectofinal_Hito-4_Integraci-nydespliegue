@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useCart } from '../contexts/CartContext'
 import { usePosts } from '../contexts/PostsContext'
@@ -8,10 +8,12 @@ import { fetchPostById } from '../services/postsService'
 export function PostDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { token, isAuthenticated } = useAuth()
+  const location = useLocation()
+  const { token, user, isAuthenticated } = useAuth()
   const { getPostById } = usePosts()
   const { addToCart } = useCart()
   const summaryPost = getPostById(id)
+  const message = location.state?.message || ''
 
   const [post, setPost] = useState(summaryPost)
   const [loading, setLoading] = useState(true)
@@ -20,6 +22,12 @@ export function PostDetail() {
   const [cartMessage, setCartMessage] = useState('')
   const [cartError, setCartError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+
+  useEffect(() => {
+    if (location.state?.message) {
+      navigate(location.pathname, { replace: true, state: null })
+    }
+  }, [location.pathname, location.state, navigate])
 
   useEffect(() => {
     let cancelled = false
@@ -91,6 +99,7 @@ export function PostDetail() {
   const sellerName = post.user?.name || post.author || 'Sin vendedor'
   const stock = Number(post.stock ?? 0)
   const safeQuantity = Math.min(Math.max(quantity, 1), Math.max(stock, 1))
+  const isOwner = String(post.user?.id) === String(user?.id)
 
   return (
     <div className="row g-4">
@@ -100,6 +109,7 @@ export function PostDetail() {
         )}
       </div>
       <div className="col-md-6">
+        {message && <div className="alert alert-success">{message}</div>}
         <h2 className="mb-3">{post.title}</h2>
         <p className="lead">{post.description}</p>
         <p className="fw-bold fs-5">Precio: ${Number(post.price || 0).toLocaleString('es-CL')}</p>
@@ -124,6 +134,11 @@ export function PostDetail() {
           <button className="btn btn-outline-primary" onClick={() => navigate('/cart')}>
             Ver carrito
           </button>
+          {isOwner && (
+            <Link to={`/posts/${post.id}/edit`} className="btn btn-outline-warning">
+              Editar publicación
+            </Link>
+          )}
           <Link to="/" className="btn btn-outline-secondary">
             Volver al menú principal
           </Link>
