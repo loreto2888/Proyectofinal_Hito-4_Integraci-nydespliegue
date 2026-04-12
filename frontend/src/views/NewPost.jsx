@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { usePosts } from '../contexts/PostsContext'
+import { PostCard } from '../components/common/PostCard'
 import { fetchPostById } from '../services/postsService'
 import { isValidUrl } from '../utils/validation'
 
@@ -28,7 +29,8 @@ const LOCATION_OPTIONS = [
 
 export function NewPost() {
   const { user, token } = useAuth()
-  const { addPost, updatePost } = usePosts()
+  const { posts, addPost, updatePost, deletePost } = usePosts()
+  const routeLocation = useLocation()
   const navigate = useNavigate()
   const { id } = useParams()
   const isEditMode = Boolean(id)
@@ -46,6 +48,11 @@ export function NewPost() {
   const [fieldErrors, setFieldErrors] = useState({})
   const [didValidate, setDidValidate] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [managementMessage, setManagementMessage] = useState('')
+  const [managementError, setManagementError] = useState('')
+  const [deletingId, setDeletingId] = useState(null)
+
+  const myPosts = posts.filter((post) => String(post.user?.id) === String(user?.id))
 
   const validateForm = () => {
     const nextErrors = {}
@@ -146,6 +153,45 @@ export function NewPost() {
       setFieldErrors(validateForm())
     }
   }, [category, description, didValidate, imageUrl, isEditMode, location, price, status, stock, title])
+
+  useEffect(() => {
+    if (!routeLocation.state?.message) {
+      return
+    }
+
+    setManagementMessage(routeLocation.state.message)
+    navigate(routeLocation.pathname, { replace: true, state: null })
+  }, [navigate, routeLocation.pathname, routeLocation.state])
+
+  const handleDelete = async (post) => {
+    const confirmed = window.confirm(`¿Seguro que quieres eliminar la publicación "${post.title}"?`)
+
+    if (!confirmed) {
+      return
+    }
+
+    setDeletingId(post.id)
+    setManagementMessage('')
+    setManagementError('')
+
+    try {
+      await deletePost(post.id, token)
+
+      if (String(post.id) === String(id)) {
+        navigate('/posts/new', {
+          replace: true,
+          state: { message: 'Publicación eliminada correctamente.' },
+        })
+        return
+      }
+
+      setManagementMessage('Publicación eliminada correctamente.')
+    } catch (err) {
+      setManagementError(err.message)
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -361,6 +407,46 @@ export function NewPost() {
                 </Link>
               </div>
             </form>
+
+            <div className="border-top mt-4 pt-4">
+              <div className="d-flex justify-content-between align-items-center mb-3 gap-3 flex-wrap">
+                <div>
+                  <h6 className="mb-1">Mis publicaciones</h6>
+                  <p className="text-muted mb-0">Desde esta misma sección también puedes editar o eliminar tus avisos.</p>
+                </div>
+                <Link to="/" className="btn btn-outline-secondary btn-sm">
+                  Volver al menú principal
+                </Link>
+              </div>
+
+              {managementMessage && <div className="alert alert-success">{managementMessage}</div>}
+              {managementError && <div className="alert alert-danger">{managementError}</div>}
+
+              {myPosts.length === 0 ? (
+                <p className="text-muted mb-0">Aún no has creado publicaciones.</p>
+              ) : (
+                <div className="row g-3">
+                  {myPosts.map((post) => (
+                    <div className="col-md-6" key={post.id}>
+                      <PostCard post={post} />
+                      <div className="mt-2 d-grid gap-2">
+                        <Link to={`/posts/${post.id}/edit`} className="btn btn-sm btn-outline-warning">
+                          Editar publicación
+                        </Link>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-danger"
+                          disabled={deletingId === post.id}
+                          onClick={() => handleDelete(post)}
+                        >
+                          {deletingId === post.id ? 'Eliminando…' : 'Eliminar publicación'}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

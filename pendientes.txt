@@ -2,10 +2,9 @@ Lista de tareas pendientes de implementar
 
 Resuelto:
 1. Crear o ajustar una pagina principal para usuarios autenticados que funcione realmente como menu principal despues del login o registro.
-
-Pendientes:
 2. Mover o replicar la gestion de publicaciones dentro del flujo de "Crear publicacion", para que desde esa seccion tambien se pueda editar y eliminar, tal como lo pide la especificacion.
 
+Pendientes:
 3. Permitir editar la foto o imagen principal de una publicacion existente desde el formulario de edicion y soportarlo tambien en el backend.
 
 4. Revisar y definir la alineacion exacta de autenticacion con la especificacion: actualmente el sistema usa email + contrasena, mientras que el documento base menciona nombre + contrasena en el registro.
