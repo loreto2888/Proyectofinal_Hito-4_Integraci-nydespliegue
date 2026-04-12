@@ -5,6 +5,7 @@
 ## Completado recientemente
 - Confirmado que el formulario de registro ya incluye un campo explicito de nombre.
 - Redirigido `Cerrar sesion` al login con mensaje de confirmacion.
+- Redirigidos `login` y `registro` al menu principal con mensaje de confirmacion.
 - Implementado carrito de compras en frontend y backend.
 - Habilitado agregar productos al carrito desde el listado y desde el detalle de publicaciones.
 - Habilitada la eliminacion de productos del carrito.
@@ -16,7 +17,6 @@
 - Ajustado `NewPost` para que el boton de volver vaya explicitamente a la pagina principal.
 
 ## Prioridad media
-- Redirigir despues de login y registro al menu principal segun la especificacion.
 - Agregar boton `Volver al menu principal` en todas las secciones requeridas.
 - Implementar edicion de publicaciones desde el frontend usando el endpoint `PUT /api/posts/:id`.
 - Implementar eliminacion de publicaciones desde el frontend usando el endpoint `DELETE /api/posts/:id`.

@@ -16,7 +16,10 @@ export function Register() {
     setLoading(true)
     try {
       await register(name, email, password, avatarUrl)
-      navigate('/')
+      navigate('/', {
+        replace: true,
+        state: { message: 'Registro completado correctamente' },
+      })
     } finally {
       setLoading(false)
     }

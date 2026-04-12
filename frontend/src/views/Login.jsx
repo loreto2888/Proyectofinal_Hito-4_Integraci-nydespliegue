@@ -22,7 +22,10 @@ export function Login() {
     setLoading(true)
     try {
       await login(email, password)
-      navigate('/profile')
+      navigate('/', {
+        replace: true,
+        state: { message: 'Sesion iniciada correctamente' },
+      })
     } finally {
       setLoading(false)
     }

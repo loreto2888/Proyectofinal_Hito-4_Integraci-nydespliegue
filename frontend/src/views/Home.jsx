@@ -1,9 +1,21 @@
-import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 export function Home() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const message = location.state?.message || ''
+
+  useEffect(() => {
+    if (location.state?.message) {
+      navigate(location.pathname, { replace: true, state: null })
+    }
+  }, [location.pathname, location.state, navigate])
+
   return (
     <section className="row align-items-center g-4">
       <div className="col-md-6">
+        {message && <div className="alert alert-success">{message}</div>}
         <h1 className="display-5 fw-bold mb-3">Bienvenidos al MarketPlace</h1>
         <p className="lead mb-4">
           Compra y vende productos de manera sencilla. Explora las publicaciones, guarda tus favoritas y
