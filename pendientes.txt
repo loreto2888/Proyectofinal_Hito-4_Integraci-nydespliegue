@@ -3,6 +3,7 @@
 ## Prioridad alta
 
 ## Completado recientemente
+- Agregadas pruebas del backend con mocks para auth, usuarios, publicaciones, favoritos y carrito, cubriendo validaciones y flujos principales de endpoints faltantes.
 - Mejoradas las validaciones y los mensajes de error en login, registro y creacion/edicion de publicaciones en frontend y backend.
 - Renombrado visualmente el campo `Título` a `Artículo` en la interfaz de crear y editar publicaciones.
 - Confirmado que el formulario de registro ya incluye un campo explicito de nombre.
@@ -26,7 +27,7 @@
 ## Prioridad media
 
 ## Prioridad baja
-- Agregar pruebas para los flujos pendientes del frontend y para endpoints faltantes del backend.
+- Agregar pruebas para los flujos pendientes del frontend.
 
 ## Observaciones tecnicas
 - `GET /api/posts/:id` ahora reconoce token opcional para devolver `isFavorite` correctamente en el detalle.
