@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext'
 export function Register() {
   const { register } = useAuth()
   const navigate = useNavigate()
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [avatarUrl, setAvatarUrl] = useState('')
@@ -14,8 +15,8 @@ export function Register() {
     e.preventDefault()
     setLoading(true)
     try {
-      await register(email, password, avatarUrl)
-      navigate('/profile')
+      await register(name, email, password, avatarUrl)
+      navigate('/')
     } finally {
       setLoading(false)
     }
@@ -30,6 +31,16 @@ export function Register() {
           </div>
           <div className="card-body">
             <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label className="form-label">Nombre</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
               <div className="mb-3">
                 <label className="form-label">Email address</label>
                 <input

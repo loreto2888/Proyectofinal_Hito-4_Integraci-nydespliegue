@@ -35,8 +35,7 @@ export function AuthProvider({ children }) {
     persistSession(loggedUser, authToken)
   }
 
-  const register = async (email, password, avatarUrl) => {
-    const name = email.split('@')[0]
+  const register = async (name, email, password, avatarUrl) => {
     await registerRequest({ name, email, password, avatarUrl })
     const { user: loggedUser, token: authToken } = await loginRequest(email, password)
     persistSession(loggedUser, authToken)
