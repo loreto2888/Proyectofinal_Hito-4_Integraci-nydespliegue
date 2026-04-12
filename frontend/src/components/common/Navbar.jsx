@@ -9,7 +9,10 @@ export function Navbar() {
 
   const handleLogout = () => {
     logout()
-    navigate('/')
+    navigate('/login', {
+      replace: true,
+      state: { message: 'Sesión cerrada correctamente' },
+    })
   }
 
   const activeClass = ({ isActive }) =>

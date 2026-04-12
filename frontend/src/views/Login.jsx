@@ -1,13 +1,21 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
 export function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [message] = useState(location.state?.message || '')
+
+  useEffect(() => {
+    if (location.state?.message) {
+      navigate(location.pathname, { replace: true, state: null })
+    }
+  }, [location.pathname, location.state, navigate])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -28,6 +36,7 @@ export function Login() {
             <h5 className="mb-0">Market Place - Iniciar sesión</h5>
           </div>
           <div className="card-body">
+            {message && <div className="alert alert-success">{message}</div>}
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
                 <label className="form-label">Email address</label>
