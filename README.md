@@ -2,6 +2,15 @@
 
 Esta carpeta contiene la versión integrada del proyecto Marketplace para el Hito 4.
 
+## PostgreSQL local con Docker Compose
+
+1. Levantar la base de datos desde la raíz del proyecto con `docker compose up -d`.
+2. El contenedor expondrá PostgreSQL en `localhost:5432`.
+3. El esquema inicial se carga automáticamente desde `backend/script.sql` la primera vez que se crea el volumen.
+4. Copiar `backend/.env.example` a `backend/.env` para que el backend use esas mismas credenciales.
+
+Si necesitas reinicializar completamente la base de datos, elimina el volumen y vuelve a levantar el servicio con `docker compose down -v` y luego `docker compose up -d`.
+
 ## Estructura
 
 - frontend/ → Aplicación cliente en React + Vite.
@@ -14,9 +23,10 @@ Esta carpeta contiene la versión integrada del proyecto Marketplace para el Hit
 
 1. Entrar en la carpeta `backend/`.
 2. Copiar `.env.example` a `.env` y ajustar credenciales de PostgreSQL y `JWT_SECRET`.
-3. Crear la base de datos local y ejecutar `script.sql`.
-4. Instalar dependencias: `npm install`.
-5. Levantar la API: `npm run dev` (escucha por defecto en el puerto 4000).
+3. Si usas Docker Compose, levantar PostgreSQL desde la raíz con `docker compose up -d`.
+4. Si no usas Docker Compose, crear la base de datos local y ejecutar `script.sql` manualmente.
+5. Instalar dependencias: `npm install`.
+6. Levantar la API: `npm run dev` (escucha por defecto en el puerto 4000).
 
 ### Frontend
 
