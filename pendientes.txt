@@ -1,21 +1,23 @@
 # Pendientes de implementacion
 
 ## Prioridad alta
-- Implementar carrito de compras en frontend y backend.
-- Permitir agregar productos al carrito desde el listado y desde el detalle de publicaciones.
-- Permitir eliminar productos del carrito.
-- Implementar flujo de simulacion de compra o pago.
-- Corregir el mapeo de datos entre backend y frontend para publicaciones.
-- Ajustar `PostCard` para usar los campos reales devueltos por la API.
-- Ajustar `PostDetail` para usar los campos reales devueltos por la API.
-- Corregir `Profile` para listar correctamente las publicaciones del usuario autenticado.
+
+## Completado recientemente
+- Implementado carrito de compras en frontend y backend.
+- Habilitado agregar productos al carrito desde el listado y desde el detalle de publicaciones.
+- Habilitada la eliminacion de productos del carrito.
+- Implementado flujo de simulacion de compra o pago con vaciado de carrito y descuento de stock.
+- Corregido el mapeo de datos entre backend y frontend para publicaciones.
+- Ajustado `PostCard` para usar los campos reales devueltos por la API.
+- Ajustado `PostDetail` para usar los campos reales devueltos por la API y cargar siempre el detalle completo.
+- Corregido `Profile` para listar correctamente las publicaciones del usuario autenticado.
+- Ajustado `NewPost` para que el boton de volver vaya explicitamente a la pagina principal.
 
 ## Prioridad media
 - Agregar formulario de registro con campo de nombre explicito.
 - Redirigir `Cerrar sesion` al login en lugar de la pagina de inicio.
 - Redirigir despues de login y registro al menu principal segun la especificacion.
 - Agregar boton `Volver al menu principal` en todas las secciones requeridas.
-- Hacer que el boton de volver en `NewPost` vaya explicitamente a la pagina principal.
 - Implementar edicion de publicaciones desde el frontend usando el endpoint `PUT /api/posts/:id`.
 - Implementar eliminacion de publicaciones desde el frontend usando el endpoint `DELETE /api/posts/:id`.
 - Conectar favoritos a la interfaz para marcar y desmarcar publicaciones.
@@ -27,6 +29,5 @@
 - Agregar pruebas para los flujos pendientes del frontend y para endpoints faltantes del backend.
 
 ## Observaciones tecnicas
-- El backend retorna `mainImage`, `user` e `isFavorite`, pero el frontend hoy usa `imageUrl`, `author` y `liked`.
-- El detalle de publicacion puede quedar incompleto porque reutiliza datos resumidos del contexto en lugar de cargar siempre el detalle completo.
 - El backend ya soporta favoritos, edicion y eliminacion de publicaciones, pero esas capacidades no estan expuestas completamente en la UI.
+- El carrito requiere que la base de datos tenga aplicado el cambio de esquema para `stock` en `posts` y la tabla `cart_items`.

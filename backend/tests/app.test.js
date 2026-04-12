@@ -29,4 +29,19 @@ describe('API REST Hito 4', () => {
       .send({ title: 'Test', description: 'Desc', price: 10, status: 'nuevo', category: 'Test', location: 'Santiago' });
     expect(res.statusCode).toBe(401);
   });
+
+  test('GET /api/cart sin token debe responder 401', async () => {
+    const res = await request(app).get('/api/cart');
+    expect(res.statusCode).toBe(401);
+  });
+
+  test('POST /api/cart sin token debe responder 401', async () => {
+    const res = await request(app).post('/api/cart').send({ postId: 1, quantity: 1 });
+    expect(res.statusCode).toBe(401);
+  });
+
+  test('POST /api/cart/checkout sin token debe responder 401', async () => {
+    const res = await request(app).post('/api/cart/checkout');
+    expect(res.statusCode).toBe(401);
+  });
 });

@@ -8,6 +8,7 @@ import { Profile } from './views/Profile'
 import { NewPost } from './views/NewPost'
 import { Gallery } from './views/Gallery'
 import { PostDetail } from './views/PostDetail'
+import { Cart } from './views/Cart'
 
 function PrivateRoute({ children }) {
   const { isAuthenticated } = useAuth()
@@ -26,6 +27,14 @@ export default function App() {
         <Route path="/posts/:id" element={<PostDetail />} />
 
         {/* Privadas */}
+        <Route
+          path="/cart"
+          element={
+            <PrivateRoute>
+              <Cart />
+            </PrivateRoute>
+          }
+        />
         <Route
           path="/profile"
           element={

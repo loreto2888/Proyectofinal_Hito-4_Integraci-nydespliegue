@@ -6,8 +6,14 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api
 
 async function handleJsonResponse(response) {
   if (!response.ok) {
-    const message = await response.text()
-    throw new Error(message || 'Error al comunicarse con el servidor')
+    const raw = await response.text()
+    let parsed = null
+
+    try {
+      parsed = JSON.parse(raw)
+    } catch {}
+
+    throw new Error(parsed?.message || raw || 'Error al comunicarse con el servidor')
   }
   if (response.status === 204) return null
   return response.json()
@@ -18,8 +24,14 @@ export async function fetchPosts() {
   return handleJsonResponse(res)
 }
 
-export async function fetchPostById(id) {
-  const res = await fetch(`${BASE_URL}/posts/${id}`)
+export async function fetchPostById(id, token) {
+  const res = await fetch(`${BASE_URL}/posts/${id}`, {
+    headers: token
+      ? {
+          Authorization: `Bearer ${token}`,
+        }
+      : undefined,
+  })
   return handleJsonResponse(res)
 }
 

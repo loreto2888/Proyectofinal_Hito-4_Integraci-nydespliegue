@@ -6,7 +6,7 @@ export function Profile() {
   const { user } = useAuth()
   const { posts } = usePosts()
 
-  const myPosts = posts.filter((p) => p.author === user?.name)
+  const myPosts = posts.filter((p) => String(p.user?.id) === String(user?.id))
 
   return (
     <div className="row">

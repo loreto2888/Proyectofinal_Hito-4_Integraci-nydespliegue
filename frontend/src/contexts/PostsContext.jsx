@@ -7,27 +7,35 @@ export function PostsProvider({ children }) {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true)
-      try {
-        const data = await fetchPosts()
-        setPosts(data)
-      } finally {
-        setLoading(false)
-      }
+  const refreshPosts = async () => {
+    setLoading(true)
+    try {
+      const data = await fetchPosts()
+      setPosts(data)
+      return data
+    } finally {
+      setLoading(false)
     }
-    load()
+  }
+
+  useEffect(() => {
+    refreshPosts()
   }, [])
 
-  const addPost = async (post, token) => {
+  const addPost = async (post, token, user) => {
     const created = await createPost(post, token)
-    setPosts((prev) => [created, ...prev])
+    setPosts((prev) => [
+      {
+        ...created,
+        user: created.user?.name ? created.user : user ? { id: user.id, name: user.name } : created.user,
+      },
+      ...prev,
+    ])
   }
 
   const getPostById = (id) => posts.find((p) => String(p.id) === String(id))
 
-  const value = { posts, loading, addPost, getPostById }
+  const value = { posts, loading, addPost, getPostById, refreshPosts }
 
   return <PostsContext.Provider value={value}>{children}</PostsContext.Provider>
 }

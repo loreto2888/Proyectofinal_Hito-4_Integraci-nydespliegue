@@ -1,8 +1,10 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { useCart } from '../../contexts/CartContext'
 
 export function Navbar() {
   const { user, isAuthenticated, logout } = useAuth()
+  const { totalItems } = useCart()
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -36,6 +38,11 @@ export function Navbar() {
             </li>
             {isAuthenticated && (
               <>
+                <li className="nav-item">
+                  <NavLink to="/cart" className={activeClass}>
+                    Carrito {totalItems > 0 ? `(${totalItems})` : ''}
+                  </NavLink>
+                </li>
                 <li className="nav-item">
                   <NavLink to="/posts/new" className={activeClass}>
                     Crear publicación

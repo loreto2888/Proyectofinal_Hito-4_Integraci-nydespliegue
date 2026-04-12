@@ -11,6 +11,7 @@ export function NewPost() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
+  const [stock, setStock] = useState('1')
   const [imageUrl, setImageUrl] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -23,6 +24,7 @@ export function NewPost() {
           title,
           description,
           price: Number(price),
+          stock: Number(stock),
           imageUrl,
           status: 'published',
           category: 'general',
@@ -31,6 +33,7 @@ export function NewPost() {
           author: user?.name || 'Yo',
         },
         token,
+        user,
       )
       navigate('/posts')
     } finally {
@@ -68,6 +71,18 @@ export function NewPost() {
                     min="0"
                   />
                 </div>
+                <div className="col-md-6">
+                  <label className="form-label">Stock</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={stock}
+                    onChange={(e) => setStock(e.target.value)}
+                    required
+                    min="1"
+                    step="1"
+                  />
+                </div>
                 <div className="col-12">
                   <label className="form-label">Descripción</label>
                   <textarea
@@ -92,7 +107,7 @@ export function NewPost() {
                 <button type="submit" className="btn btn-success" disabled={submitting}>
                   {submitting ? 'Publicando…' : 'Publicar'}
                 </button>
-                <button type="button" className="btn btn-outline-secondary" onClick={() => navigate(-1)}>
+                <button type="button" className="btn btn-outline-secondary" onClick={() => navigate('/')}>
                   Volver
                 </button>
               </div>
