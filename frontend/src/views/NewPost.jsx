@@ -141,7 +141,7 @@ export function NewPost() {
             <form onSubmit={handleSubmit}>
               <div className="row g-3">
                 <div className="col-md-6">
-                  <label className="form-label">Título</label>
+                  <label className="form-label">Artículo</label>
                   <input
                     className="form-control"
                     value={title}

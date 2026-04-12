@@ -3,6 +3,7 @@
 ## Prioridad alta
 
 ## Completado recientemente
+- Renombrado visualmente el campo `Título` a `Artículo` en la interfaz de crear y editar publicaciones.
 - Confirmado que el formulario de registro ya incluye un campo explicito de nombre.
 - Redirigido `Cerrar sesion` al login con mensaje de confirmacion.
 - Redirigidos `login` y `registro` al menu principal con mensaje de confirmacion.
@@ -23,7 +24,6 @@
 ## Prioridad media
 
 ## Prioridad baja
-- Revisar si el campo `Titulo` debe renombrarse visualmente a `Articulo` para alinearse con la especificacion.
 - Evaluar si `status`, `category` y `location` deben poder editarse desde la interfaz en vez de quedar fijos.
 - Mejorar validaciones y mensajes de error en login, registro y creacion de publicaciones.
 - Agregar pruebas para los flujos pendientes del frontend y para endpoints faltantes del backend.
