@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useCart } from '../contexts/CartContext'
 import { usePosts } from '../contexts/PostsContext'
@@ -80,9 +80,9 @@ export function PostDetail() {
     return (
       <div>
         <p>{error || 'No se encontró la publicación.'}</p>
-        <button className="btn btn-outline-secondary" onClick={() => navigate(-1)}>
-          Volver
-        </button>
+        <Link to="/" className="btn btn-outline-secondary">
+          Volver al menú principal
+        </Link>
       </div>
     )
   }
@@ -124,9 +124,9 @@ export function PostDetail() {
           <button className="btn btn-outline-primary" onClick={() => navigate('/cart')}>
             Ver carrito
           </button>
-          <button className="btn btn-outline-secondary" onClick={() => navigate(-1)}>
-            Volver
-          </button>
+          <Link to="/" className="btn btn-outline-secondary">
+            Volver al menú principal
+          </Link>
         </div>
       </div>
     </div>

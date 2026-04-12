@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { usePosts } from '../contexts/PostsContext'
 import { PostCard } from '../components/common/PostCard'
@@ -34,6 +35,9 @@ export function Profile() {
       <div className="col-md-9">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h4>Mis publicaciones</h4>
+          <Link to="/" className="btn btn-outline-secondary btn-sm">
+            Volver al menú principal
+          </Link>
         </div>
         {myPosts.length === 0 ? (
           <p className="text-muted">Aún no has creado publicaciones.</p>

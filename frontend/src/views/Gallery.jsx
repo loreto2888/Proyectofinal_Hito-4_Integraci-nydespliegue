@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { usePosts } from '../contexts/PostsContext'
 import { PostCard } from '../components/common/PostCard'
 
@@ -17,9 +18,14 @@ export function Gallery() {
         </div>
       </aside>
       <section className="col-md-9">
-        <div className="d-flex justify-content-between align-items-center mb-3">
+        <div className="d-flex justify-content-between align-items-center mb-3 gap-2 flex-wrap">
           <h4>Publicaciones</h4>
-          <span className="text-muted small">Total: {posts.length}</span>
+          <div className="d-flex align-items-center gap-2 flex-wrap justify-content-end">
+            <span className="text-muted small">Total: {posts.length}</span>
+            <Link to="/" className="btn btn-outline-secondary btn-sm">
+              Volver al menú principal
+            </Link>
+          </div>
         </div>
         {loading ? (
           <p>Cargando publicaciones…</p>

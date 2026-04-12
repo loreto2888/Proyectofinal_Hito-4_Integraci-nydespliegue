@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { usePosts } from '../contexts/PostsContext'
 
@@ -107,9 +107,9 @@ export function NewPost() {
                 <button type="submit" className="btn btn-success" disabled={submitting}>
                   {submitting ? 'Publicando…' : 'Publicar'}
                 </button>
-                <button type="button" className="btn btn-outline-secondary" onClick={() => navigate('/')}>
-                  Volver
-                </button>
+                <Link to="/" className="btn btn-outline-secondary">
+                  Volver al menú principal
+                </Link>
               </div>
             </form>
           </div>

@@ -66,7 +66,7 @@ export function Login() {
                   {loading ? 'Ingresando…' : 'Iniciar Sesión'}
                 </button>
                 <Link to="/" className="btn btn-outline-secondary">
-                  Volver
+                  Volver al menú principal
                 </Link>
               </div>
             </form>

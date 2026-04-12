@@ -78,7 +78,7 @@ export function Register() {
                   {loading ? 'Registrando…' : 'Registrarme'}
                 </button>
                 <Link to="/" className="btn btn-outline-secondary">
-                  Volver
+                  Volver al menú principal
                 </Link>
               </div>
             </form>

@@ -15,9 +15,9 @@
 - Ajustado `PostDetail` para usar los campos reales devueltos por la API y cargar siempre el detalle completo.
 - Corregido `Profile` para listar correctamente las publicaciones del usuario autenticado.
 - Ajustado `NewPost` para que el boton de volver vaya explicitamente a la pagina principal.
+- Agregado y unificado el boton `Volver al menu principal` en las secciones requeridas del frontend.
 
 ## Prioridad media
-- Agregar boton `Volver al menu principal` en todas las secciones requeridas.
 - Implementar edicion de publicaciones desde el frontend usando el endpoint `PUT /api/posts/:id`.
 - Implementar eliminacion de publicaciones desde el frontend usando el endpoint `DELETE /api/posts/:id`.
 - Conectar favoritos a la interfaz para marcar y desmarcar publicaciones.
