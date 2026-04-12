@@ -18,9 +18,9 @@
 - Agregado y unificado el boton `Volver al menu principal` en las secciones requeridas del frontend.
 - Implementada edicion de publicaciones desde el frontend con acceso desde perfil y detalle usando `PUT /api/posts/:id`.
 - Implementada eliminacion de publicaciones desde `Profile` en el frontend usando `DELETE /api/posts/:id` con confirmacion y mensajes visibles.
+- Conectados favoritos en la interfaz para marcar y desmarcar publicaciones desde el listado y el detalle.
 
 ## Prioridad media
-- Conectar favoritos a la interfaz para marcar y desmarcar publicaciones.
 
 ## Prioridad baja
 - Revisar si el campo `Titulo` debe renombrarse visualmente a `Articulo` para alinearse con la especificacion.
@@ -29,5 +29,5 @@
 - Agregar pruebas para los flujos pendientes del frontend y para endpoints faltantes del backend.
 
 ## Observaciones tecnicas
-- El backend ya soporta favoritos, pero esa capacidad no esta expuesta completamente en la UI.
+- `GET /api/posts/:id` ahora reconoce token opcional para devolver `isFavorite` correctamente en el detalle.
 - El carrito requiere que la base de datos tenga aplicado el cambio de esquema para `stock` en `posts` y la tabla `cart_items`.

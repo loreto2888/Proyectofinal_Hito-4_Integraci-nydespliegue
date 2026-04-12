@@ -1,24 +1,47 @@
 import jwt from 'jsonwebtoken';
 
-export function requireAuth(req, res, next) {
-  const header = req.headers.authorization;
-
+function parseBearerToken(header) {
   if (!header) {
-    return res.status(401).json({ message: 'Token requerido' });
+    return { error: 'Token requerido' };
   }
 
   const [scheme, token] = header.split(' ');
 
   if (scheme !== 'Bearer' || !token) {
-    return res.status(401).json({ message: 'Formato de token inválido' });
+    return { error: 'Formato de token inválido' };
   }
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret');
-    req.user = { id: payload.id };
-    return next();
+    return { user: { id: payload.id } };
   } catch (err) {
     console.error(err);
-    return res.status(401).json({ message: 'Token inválido' });
+    return { error: 'Token inválido' };
   }
+}
+
+export function requireAuth(req, res, next) {
+  const result = parseBearerToken(req.headers.authorization);
+
+  if (!result.user) {
+    return res.status(401).json({ message: result.error });
+  }
+
+  req.user = result.user;
+  return next();
+}
+
+export function optionalAuth(req, res, next) {
+  if (!req.headers.authorization) {
+    return next();
+  }
+
+  const result = parseBearerToken(req.headers.authorization);
+
+  if (!result.user) {
+    return res.status(401).json({ message: result.error });
+  }
+
+  req.user = result.user;
+  return next();
 }

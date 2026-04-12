@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useCart } from '../../contexts/CartContext'
+import { useFavorites } from '../../contexts/FavoritesContext'
 
 export function PostCard({ post }) {
   const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
   const { addToCart } = useCart()
+  const { isFavorite, isPending, toggleFavorite } = useFavorites()
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
@@ -15,6 +17,8 @@ export function PostCard({ post }) {
   const sellerName = post.user?.name || post.author || 'Sin vendedor'
   const stock = Number(post.stock ?? 0)
   const price = Number(post.price || 0)
+  const favorite = isFavorite(post.id)
+  const favoritePending = isPending(post.id)
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
@@ -36,6 +40,21 @@ export function PostCard({ post }) {
     }
   }
 
+  const handleToggleFavorite = async () => {
+    if (!isAuthenticated) {
+      navigate('/login')
+      return
+    }
+
+    setError('')
+
+    try {
+      await toggleFavorite(post.id)
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
   return (
     <div className="card h-100 shadow-sm">
       {imageUrl && (
@@ -53,6 +72,14 @@ export function PostCard({ post }) {
           <Link to={`/posts/${post.id}`} className="btn btn-sm btn-outline-primary">
             Ver detalle
           </Link>
+          <button
+            className={`btn btn-sm ${favorite ? 'btn-danger' : 'btn-outline-danger'}`}
+            type="button"
+            disabled={favoritePending}
+            onClick={handleToggleFavorite}
+          >
+            {favoritePending ? (favorite ? 'Quitando...' : 'Guardando...') : favorite ? 'Quitar favorito' : 'Guardar favorito'}
+          </button>
           <button
             className="btn btn-sm btn-success"
             type="button"

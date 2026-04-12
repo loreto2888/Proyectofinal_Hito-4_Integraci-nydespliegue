@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useCart } from '../contexts/CartContext'
+import { useFavorites } from '../contexts/FavoritesContext'
 import { usePosts } from '../contexts/PostsContext'
 import { fetchPostById } from '../services/postsService'
 
@@ -12,6 +13,7 @@ export function PostDetail() {
   const { token, user, isAuthenticated } = useAuth()
   const { getPostById } = usePosts()
   const { addToCart } = useCart()
+  const { loaded: favoritesLoaded, isFavorite, isPending, toggleFavorite } = useFavorites()
   const summaryPost = getPostById(id)
   const message = location.state?.message || ''
 
@@ -100,6 +102,23 @@ export function PostDetail() {
   const stock = Number(post.stock ?? 0)
   const safeQuantity = Math.min(Math.max(quantity, 1), Math.max(stock, 1))
   const isOwner = String(post.user?.id) === String(user?.id)
+  const favorite = favoritesLoaded ? isFavorite(post.id) : Boolean(post.isFavorite)
+  const favoritePending = isPending(post.id)
+
+  const handleToggleFavorite = async () => {
+    if (!isAuthenticated) {
+      navigate('/login')
+      return
+    }
+
+    setCartError('')
+
+    try {
+      await toggleFavorite(post.id)
+    } catch (err) {
+      setCartError(err.message)
+    }
+  }
 
   return (
     <div className="row g-4">
@@ -130,6 +149,13 @@ export function PostDetail() {
           />
           <button className="btn btn-success" disabled={stock < 1 || submitting} onClick={handleAddToCart}>
             {submitting ? 'Agregando…' : 'Agregar al carrito'}
+          </button>
+          <button
+            className={`btn ${favorite ? 'btn-danger' : 'btn-outline-danger'}`}
+            disabled={favoritePending}
+            onClick={handleToggleFavorite}
+          >
+            {favoritePending ? (favorite ? 'Quitando...' : 'Guardando...') : favorite ? 'Quitar favorito' : 'Guardar favorito'}
           </button>
           <button className="btn btn-outline-primary" onClick={() => navigate('/cart')}>
             Ver carrito
