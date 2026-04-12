@@ -80,7 +80,7 @@ export function Login() {
             {error && <div className="alert alert-danger">{error}</div>}
             <form onSubmit={handleSubmit} noValidate>
               <div className="mb-3">
-                <label className="form-label">Email address</label>
+                <label className="form-label">Correo electrónico</label>
                 <input
                   type="email"
                   className={`form-control ${fieldErrors.email ? 'is-invalid' : ''}`}
@@ -91,7 +91,7 @@ export function Login() {
                 {fieldErrors.email && <div className="invalid-feedback">{fieldErrors.email}</div>}
               </div>
               <div className="mb-3">
-                <label className="form-label">Password</label>
+                <label className="form-label">Contraseña</label>
                 <input
                   type="password"
                   className={`form-control ${fieldErrors.password ? 'is-invalid' : ''}`}

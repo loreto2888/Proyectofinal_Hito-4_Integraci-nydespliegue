@@ -17,6 +17,12 @@ Si necesitas reinicializar completamente la base de datos, elimina el volumen y 
 - backend/ → API REST en Node.js + Express + PostgreSQL.
 - docs/ → Documentación específica del Hito 4.
 
+## Autenticación implementada
+
+- El acceso de la aplicación se realiza con `email + contraseña`.
+- El campo `name` se conserva como nombre visible del usuario, no como identificador de login.
+- El `email` es obligatorio en registro y se usa también para iniciar sesión.
+
 ## Ejecución en desarrollo
 
 ### Backend

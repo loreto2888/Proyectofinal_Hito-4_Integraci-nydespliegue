@@ -4,10 +4,9 @@ Resuelto:
 1. Crear o ajustar una pagina principal para usuarios autenticados que funcione realmente como menu principal despues del login o registro.
 2. Mover o replicar la gestion de publicaciones dentro del flujo de "Crear publicacion", para que desde esa seccion tambien se pueda editar y eliminar, tal como lo pide la especificacion.
 3. Permitir editar la foto o imagen principal de una publicacion existente desde el formulario de edicion y soportarlo tambien en el backend.
+4. Revisar y definir la alineacion exacta de autenticacion con la especificacion: se mantiene email + contrasena como autenticacion real, con email obligatorio, y se documenta que el nombre queda como dato de perfil.
 
 Pendientes:
-4. Revisar y definir la alineacion exacta de autenticacion con la especificacion: actualmente el sistema usa email + contrasena, mientras que el documento base menciona nombre + contrasena en el registro.
-
 5. Validar si se quiere que la pagina inicial cambie su contenido cuando hay sesion iniciada, para mostrar accesos directos al flujo principal en vez de mantener una landing generica.
 
 6. Si se busca cumplimiento literal del documento, agregar acceso explicito desde la vista de creacion de publicaciones para volver a la pagina principal y para administrar publicaciones existentes desde la misma seccion.

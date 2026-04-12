@@ -96,7 +96,7 @@ export function Register() {
                 {fieldErrors.name && <div className="invalid-feedback">{fieldErrors.name}</div>}
               </div>
               <div className="mb-3">
-                <label className="form-label">Email address</label>
+                <label className="form-label">Correo electrónico</label>
                 <input
                   type="email"
                   className={`form-control ${fieldErrors.email ? 'is-invalid' : ''}`}
@@ -107,7 +107,7 @@ export function Register() {
                 {fieldErrors.email && <div className="invalid-feedback">{fieldErrors.email}</div>}
               </div>
               <div className="mb-3">
-                <label className="form-label">Password</label>
+                <label className="form-label">Contraseña</label>
                 <input
                   type="password"
                   className={`form-control ${fieldErrors.password ? 'is-invalid' : ''}`}
@@ -118,7 +118,7 @@ export function Register() {
                 {fieldErrors.password && <div className="invalid-feedback">{fieldErrors.password}</div>}
               </div>
               <div className="mb-3">
-                <label className="form-label">Avatar URL</label>
+                <label className="form-label">URL del avatar</label>
                 <input
                   type="url"
                   className={`form-control ${fieldErrors.avatarUrl ? 'is-invalid' : ''}`}

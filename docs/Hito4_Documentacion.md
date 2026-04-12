@@ -74,11 +74,17 @@ De esta forma:
 - En local: si no hay variable de entorno, apunta a `http://localhost:4000/api`.
 - En producción: `VITE_API_BASE_URL` apunta al backend desplegado (por ejemplo `https://mi-backend.onrender.com/api`).
 
+### Nota sobre autenticación
+
+- La implementación integrada del proyecto autentica con `email + contraseña`.
+- El `name` del usuario se almacena como dato de perfil y visualización.
+- El `email` es obligatorio en el registro y es el identificador utilizado por `POST /api/auth/login`.
+
 ## 6. Pruebas de integración y persistencia
 
 1. Desde el frontend en producción:
-   - Registrarse como nuevo usuario.
-   - Iniciar sesión.
+   - Registrarse como nuevo usuario con nombre, email y contraseña.
+   - Iniciar sesión con email y contraseña.
    - Crear nuevas publicaciones.
 2. Verificar desde el panel del proveedor de base de datos que se insertan datos en las tablas:
    - `users` (usuarios registrados)
