@@ -3,6 +3,7 @@
 ## Prioridad alta
 
 ## Completado recientemente
+- Mejoradas las validaciones y los mensajes de error en login, registro y creacion/edicion de publicaciones en frontend y backend.
 - Renombrado visualmente el campo `Título` a `Artículo` en la interfaz de crear y editar publicaciones.
 - Confirmado que el formulario de registro ya incluye un campo explicito de nombre.
 - Redirigido `Cerrar sesion` al login con mensaje de confirmacion.
@@ -25,7 +26,6 @@
 ## Prioridad media
 
 ## Prioridad baja
-- Mejorar validaciones y mensajes de error en login, registro y creacion de publicaciones.
 - Agregar pruebas para los flujos pendientes del frontend y para endpoints faltantes del backend.
 
 ## Observaciones tecnicas

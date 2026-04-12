@@ -6,8 +6,14 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api
 
 async function handleJsonResponse(response) {
   if (!response.ok) {
-    const message = await response.text()
-    throw new Error(message || 'Error de autenticación')
+    const raw = await response.text()
+    let parsed = null
+
+    try {
+      parsed = JSON.parse(raw)
+    } catch {}
+
+    throw new Error(parsed?.message || raw || 'Error de autenticación')
   }
   if (response.status === 204) return null
   return response.json()

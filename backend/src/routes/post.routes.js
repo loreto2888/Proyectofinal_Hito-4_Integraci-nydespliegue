@@ -3,6 +3,22 @@ import { query } from '../db.js';
 import { optionalAuth, requireAuth } from '../middleware/auth.js';
 
 const router = Router();
+const ALLOWED_STATUS = new Set(['published', 'draft', 'sold']);
+const ALLOWED_CATEGORY = new Set(['general', 'tecnologia', 'hogar', 'ropa', 'deportes', 'otros']);
+const ALLOWED_LOCATION = new Set(['online', 'presencial', 'envio']);
+
+function isValidUrl(value) {
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function normalizeText(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
 
 router.get('/', async (req, res) => {
   try {
@@ -95,21 +111,81 @@ router.get('/:id', optionalAuth, async (req, res) => {
 });
 
 router.post('/', requireAuth, async (req, res) => {
-  const { title, description, price, stock, status, category, location, images } = req.body;
+  const title = normalizeText(req.body?.title);
+  const description = normalizeText(req.body?.description);
+  const { price, stock, images } = req.body;
+  const status = normalizeText(req.body?.status);
+  const category = normalizeText(req.body?.category);
+  const location = normalizeText(req.body?.location);
 
-  if (!title || !description || price == null || stock == null || !status || !category || !location) {
-    return res.status(400).json({ message: 'Faltan campos obligatorios' });
+  if (!title) {
+    return res.status(400).json({ message: 'El artículo es obligatorio' });
+  }
+
+  if (title.length < 3) {
+    return res.status(400).json({ message: 'El artículo debe tener al menos 3 caracteres' });
+  }
+
+  if (!description) {
+    return res.status(400).json({ message: 'La descripción es obligatoria' });
+  }
+
+  if (description.length < 10) {
+    return res.status(400).json({ message: 'La descripción debe tener al menos 10 caracteres' });
+  }
+
+  if (price == null || price === '') {
+    return res.status(400).json({ message: 'El precio es obligatorio' });
+  }
+
+  if (stock == null || stock === '') {
+    return res.status(400).json({ message: 'El stock es obligatorio' });
+  }
+
+  if (!status) {
+    return res.status(400).json({ message: 'El estado es obligatorio' });
+  }
+
+  if (!ALLOWED_STATUS.has(status)) {
+    return res.status(400).json({ message: 'Selecciona un estado válido' });
+  }
+
+  if (!category) {
+    return res.status(400).json({ message: 'La categoría es obligatoria' });
+  }
+
+  if (!ALLOWED_CATEGORY.has(category)) {
+    return res.status(400).json({ message: 'Selecciona una categoría válida' });
+  }
+
+  if (!location) {
+    return res.status(400).json({ message: 'La modalidad es obligatoria' });
+  }
+
+  if (!ALLOWED_LOCATION.has(location)) {
+    return res.status(400).json({ message: 'Selecciona una modalidad válida' });
   }
 
   const numericPrice = Number(price);
   const numericStock = Number(stock);
 
   if (!Number.isFinite(numericPrice) || numericPrice < 0) {
-    return res.status(400).json({ message: 'El precio debe ser un número válido' });
+    return res.status(400).json({ message: 'El precio debe ser un número válido mayor o igual a 0' });
   }
 
   if (!Number.isInteger(numericStock) || numericStock < 1) {
     return res.status(400).json({ message: 'El stock debe ser un entero mayor o igual a 1' });
+  }
+
+  if (images != null) {
+    if (!Array.isArray(images)) {
+      return res.status(400).json({ message: 'Las imágenes deben enviarse como una lista' });
+    }
+
+    const invalidImage = images.find((image) => typeof image !== 'string' || !isValidUrl(image.trim()));
+    if (invalidImage) {
+      return res.status(400).json({ message: 'Cada imagen debe ser una URL válida' });
+    }
   }
 
   try {
@@ -126,7 +202,7 @@ router.post('/', requireAuth, async (req, res) => {
       const values = images.map((_, index) => `($1, $${index + 2}, ${index + 1})`).join(',');
       await query(
         `INSERT INTO post_images (post_id, url, "order") VALUES ${values}`,
-        [post.id, ...images]
+        [post.id, ...images.map((image) => image.trim())]
       );
     }
 
@@ -145,12 +221,37 @@ router.post('/', requireAuth, async (req, res) => {
 
 router.put('/:id', requireAuth, async (req, res) => {
   const id = Number(req.params.id);
-  const { title, description, price, stock, status, category, location } = req.body;
+  const title = req.body?.title != null ? normalizeText(req.body.title) : null;
+  const description = req.body?.description != null ? normalizeText(req.body.description) : null;
+  const { price, stock } = req.body;
+  const status = req.body?.status != null ? normalizeText(req.body.status) : null;
+  const category = req.body?.category != null ? normalizeText(req.body.category) : null;
+  const location = req.body?.location != null ? normalizeText(req.body.location) : null;
+
+  if (title !== null) {
+    if (!title) {
+      return res.status(400).json({ message: 'El artículo es obligatorio' });
+    }
+
+    if (title.length < 3) {
+      return res.status(400).json({ message: 'El artículo debe tener al menos 3 caracteres' });
+    }
+  }
+
+  if (description !== null) {
+    if (!description) {
+      return res.status(400).json({ message: 'La descripción es obligatoria' });
+    }
+
+    if (description.length < 10) {
+      return res.status(400).json({ message: 'La descripción debe tener al menos 10 caracteres' });
+    }
+  }
 
   if (price != null) {
     const numericPrice = Number(price);
     if (!Number.isFinite(numericPrice) || numericPrice < 0) {
-      return res.status(400).json({ message: 'El precio debe ser un número válido' });
+      return res.status(400).json({ message: 'El precio debe ser un número válido mayor o igual a 0' });
     }
   }
 
@@ -159,6 +260,18 @@ router.put('/:id', requireAuth, async (req, res) => {
     if (!Number.isInteger(numericStock) || numericStock < 1) {
       return res.status(400).json({ message: 'El stock debe ser un entero mayor o igual a 1' });
     }
+  }
+
+  if (status !== null && !ALLOWED_STATUS.has(status)) {
+    return res.status(400).json({ message: 'Selecciona un estado válido' });
+  }
+
+  if (category !== null && !ALLOWED_CATEGORY.has(category)) {
+    return res.status(400).json({ message: 'Selecciona una categoría válida' });
+  }
+
+  if (location !== null && !ALLOWED_LOCATION.has(location)) {
+    return res.status(400).json({ message: 'Selecciona una modalidad válida' });
   }
 
   const numericPrice = price != null ? Number(price) : null;

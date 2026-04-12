@@ -5,11 +5,22 @@ import { query } from '../db.js';
 import { requireAuth } from '../middleware/auth.js';
 
 const router = Router();
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email y password son requeridos' });
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim() : '';
+  const password = typeof req.body?.password === 'string' ? req.body.password : '';
+
+  if (!email) {
+    return res.status(400).json({ message: 'El email es obligatorio' });
+  }
+
+  if (!EMAIL_REGEX.test(email)) {
+    return res.status(400).json({ message: 'Ingresa un email válido' });
+  }
+
+  if (!password) {
+    return res.status(400).json({ message: 'La contraseña es obligatoria' });
   }
 
   try {
@@ -19,13 +30,13 @@ router.post('/login', async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(401).json({ message: 'Credenciales inválidas' });
+      return res.status(401).json({ message: 'Email o contraseña incorrectos' });
     }
 
     const user = result.rows[0];
     const isValid = await bcrypt.compare(password, user.password_hash);
     if (!isValid) {
-      return res.status(401).json({ message: 'Credenciales inválidas' });
+      return res.status(401).json({ message: 'Email o contraseña incorrectos' });
     }
 
     const token = jwt.sign(
