@@ -4,6 +4,27 @@ import { useAuth } from '../contexts/AuthContext'
 import { usePosts } from '../contexts/PostsContext'
 import { fetchPostById } from '../services/postsService'
 
+const STATUS_OPTIONS = [
+  { value: 'published', label: 'Publicado' },
+  { value: 'draft', label: 'Borrador' },
+  { value: 'sold', label: 'Vendido' },
+]
+
+const CATEGORY_OPTIONS = [
+  { value: 'general', label: 'General' },
+  { value: 'tecnologia', label: 'Tecnología' },
+  { value: 'hogar', label: 'Hogar' },
+  { value: 'ropa', label: 'Ropa' },
+  { value: 'deportes', label: 'Deportes' },
+  { value: 'otros', label: 'Otros' },
+]
+
+const LOCATION_OPTIONS = [
+  { value: 'online', label: 'Online' },
+  { value: 'presencial', label: 'Presencial' },
+  { value: 'envio', label: 'Envío' },
+]
+
 export function NewPost() {
   const { user, token } = useAuth()
   const { addPost, updatePost } = usePosts()
@@ -15,6 +36,9 @@ export function NewPost() {
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
   const [stock, setStock] = useState('1')
+  const [status, setStatus] = useState('published')
+  const [category, setCategory] = useState('general')
+  const [location, setLocation] = useState('online')
   const [imageUrl, setImageUrl] = useState('')
   const [loadingPost, setLoadingPost] = useState(isEditMode)
   const [error, setError] = useState('')
@@ -46,6 +70,9 @@ export function NewPost() {
         setDescription(post.description || '')
         setPrice(String(post.price ?? ''))
         setStock(String(post.stock ?? '1'))
+        setStatus(post.status || 'published')
+        setCategory(post.category || 'general')
+        setLocation(post.location || 'online')
         setImageUrl(post.images?.[0]?.url || post.mainImage || '')
       } catch (err) {
         if (!cancelled) {
@@ -79,6 +106,9 @@ export function NewPost() {
             description,
             price: Number(price),
             stock: Number(stock),
+            status,
+            category,
+            location,
           },
           token,
         )
@@ -97,9 +127,9 @@ export function NewPost() {
           price: Number(price),
           stock: Number(stock),
           imageUrl,
-          status: 'published',
-          category: 'general',
-          location: 'online',
+          status,
+          category,
+          location,
           images: imageUrl ? [imageUrl] : [],
           author: user?.name || 'Yo',
         },
@@ -171,6 +201,36 @@ export function NewPost() {
                     min="1"
                     step="1"
                   />
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Estado</label>
+                  <select className="form-select" value={status} onChange={(e) => setStatus(e.target.value)} required>
+                    {STATUS_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Categoría</label>
+                  <select className="form-select" value={category} onChange={(e) => setCategory(e.target.value)} required>
+                    {CATEGORY_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Modalidad</label>
+                  <select className="form-select" value={location} onChange={(e) => setLocation(e.target.value)} required>
+                    {LOCATION_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="col-12">
                   <label className="form-label">Descripción</label>

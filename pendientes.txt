@@ -20,11 +20,11 @@
 - Implementada edicion de publicaciones desde el frontend con acceso desde perfil y detalle usando `PUT /api/posts/:id`.
 - Implementada eliminacion de publicaciones desde `Profile` en el frontend usando `DELETE /api/posts/:id` con confirmacion y mensajes visibles.
 - Conectados favoritos en la interfaz para marcar y desmarcar publicaciones desde el listado y el detalle.
+- Habilitada la edicion de `status`, `category` y `location` desde la interfaz de crear y editar publicaciones con opciones cerradas.
 
 ## Prioridad media
 
 ## Prioridad baja
-- Evaluar si `status`, `category` y `location` deben poder editarse desde la interfaz en vez de quedar fijos.
 - Mejorar validaciones y mensajes de error en login, registro y creacion de publicaciones.
 - Agregar pruebas para los flujos pendientes del frontend y para endpoints faltantes del backend.
 
