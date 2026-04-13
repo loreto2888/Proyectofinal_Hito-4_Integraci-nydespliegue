@@ -1,4 +1,4 @@
-Descripcion de Producto
+Descripción de Producto
 
 Nombre del producto
 Aplicacion web de compra y venta de articulos.
@@ -15,7 +15,7 @@ Flujo principal de uso
 Funciones principales
 
 1. Registro e inicio de sesion
-- El sistema debe permitir registrar usuarios con nombre y contrasena.
+- El sistema debe permitir registrar usuarios con email y contrasena.
 - El boton `Iniciar sesion` debe estar orientado a usuarios ya registrados.
 - Si el usuario no esta registrado, debe existir acceso claro a la opcion `Registro`.
 - El boton `Cerrar sesion` debe finalizar la sesion y redirigir al login.
@@ -30,7 +30,7 @@ Funciones principales
   - Articulo
   - Precio
   - Descripcion
-  - Foto
+  - Foto por url, 1 sola
 - En la seccion de publicaciones se debe poder:
   - Ver el listado de publicaciones
   - Ver el detalle de cada publicacion
@@ -46,3 +46,5 @@ Funciones principales
 Navegacion
 - Debe existir un boton para volver a la pagina principal o menu principal desde cada seccion.
 - En la vista de creacion de publicaciones tambien debe existir un boton `Volver a pagina principal`.
+
+si el usuario no esta logeado se debe mostrar las opciones de inicio sesión y registro 
