@@ -60,7 +60,7 @@ Permitir a los usuarios:
   - Publicado
   - Vendido
 - Cuando el stock llegue a cero, el estado debe cambiar automaticamente a `Vendido`.
-- mostrar todos los campos de la publicación 
+- mostrar todos los campos de la publicación
 
 4.5. Favoritos
 - Debe existir una pestana `Favoritos`.

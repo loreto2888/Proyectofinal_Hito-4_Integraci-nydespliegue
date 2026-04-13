@@ -1,7 +1,0 @@
-PENDIENTES NUEVOS DEL REPOSITORIO
-
-1. Ajustar listado general de publicaciones segun especificacion.
-- [x] Mostrar en la galeria solo publicaciones con estado `published`.
-
-2. Revisar gestion de mis publicaciones segun especificacion.
-- [x] Mostrar todos los campos requeridos de la publicacion en la vista de gestion de mis publicaciones.
