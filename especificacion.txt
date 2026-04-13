@@ -42,7 +42,7 @@ Permitir a los usuarios:
   - Estado de la publicacion
   - Stock
 - En la seccion de publicaciones se debe poder:
-  - Ver el listado de publicaciones
+  - Ver el listado de publicaciones en estado publicado
   - Ver el detalle de cada publicacion
   - Agregar productos al carrito
   - Eliminar productos del carrito
@@ -51,8 +51,8 @@ Permitir a los usuarios:
   - Ordenar publicaciones por precio de mayor a menor
   - Ordenar publicaciones por mas recientes
 
-4.4. Gestion de publicaciones
-- En la pantalla de crear publicaciones debe existir la opcion de:
+4.4. Gestion de mis publicaciones
+- En la pantalla de gestión de mis publicaciones debe existir la opcion de:
   - Editar publicaciones
   - Eliminar publicaciones
 - Cada publicacion debe manejar los siguientes estados:
@@ -60,6 +60,7 @@ Permitir a los usuarios:
   - Publicado
   - Vendido
 - Cuando el stock llegue a cero, el estado debe cambiar automaticamente a `Vendido`.
+- mostrar todos los campos de la publicación 
 
 4.5. Favoritos
 - Debe existir una pestana `Favoritos`.
