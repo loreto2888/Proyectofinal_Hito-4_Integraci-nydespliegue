@@ -11,9 +11,9 @@ PENDIENTES DEL REPOSITORIO
 - [x] Permitir ordenar por precio mayor a menor.
 - [x] Permitir ordenar por mas recientes desde la interfaz.
 
-3. Ajustar navegacion para usuarios no autenticados.
-- Limitar la experiencia publica para mostrar solo Iniciar sesion y Registro segun la especificacion.
-- Revisar si Publicaciones debe ocultarse o protegerse cuando no hay sesion.
+3. [COMPLETADO] Ajustar navegacion para usuarios no autenticados.
+- [x] Limitar la experiencia publica para mostrar solo Iniciar sesion y Registro segun la especificacion.
+- [x] Revisar si Publicaciones debe ocultarse o protegerse cuando no hay sesion.
 
 4. Automatizar cambio de estado a vendido cuando stock llegue a cero.
 - Actualizar el backend para cambiar el estado de la publicacion a sold al agotar stock.

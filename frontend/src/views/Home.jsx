@@ -115,8 +115,8 @@ export function Home() {
         {message && <div className="alert alert-success">{message}</div>}
         <h1 className="display-5 fw-bold mb-3">Bienvenidos al MarketPlace</h1>
         <p className="lead mb-4">
-          Compra y vende productos de manera sencilla. Explora las publicaciones, guarda tus favoritas y
-          administra tus propias ofertas desde tu perfil.
+          Inicia sesión o crea una cuenta para entrar al marketplace y acceder a publicaciones, carrito,
+          favoritos y gestión de tu perfil.
         </p>
         <div className="d-flex gap-2">
           <Link to="/login" className="btn btn-dark">

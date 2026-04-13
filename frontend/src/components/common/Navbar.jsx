@@ -34,13 +34,13 @@ export function Navbar() {
         </button>
         <div className="collapse navbar-collapse" id="mainNavbar">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            <li className="nav-item">
-              <NavLink to="/posts" className={activeClass}>
-                Publicaciones
-              </NavLink>
-            </li>
             {isAuthenticated && (
               <>
+                <li className="nav-item">
+                  <NavLink to="/posts" className={activeClass}>
+                    Publicaciones
+                  </NavLink>
+                </li>
                 <li className="nav-item">
                   <NavLink to="/favorites" className={activeClass}>
                     Favoritos

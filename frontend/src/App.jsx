@@ -53,10 +53,23 @@ export default function App() {
             </PublicOnlyRoute>
           }
         />
-        <Route path="/posts" element={<Gallery />} />
-        <Route path="/posts/:id" element={<PostDetail />} />
-
         {/* Privadas */}
+        <Route
+          path="/posts"
+          element={
+            <PrivateRoute>
+              <Gallery />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/posts/:id"
+          element={
+            <PrivateRoute>
+              <PostDetail />
+            </PrivateRoute>
+          }
+        />
         <Route
           path="/favorites"
           element={
