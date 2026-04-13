@@ -97,7 +97,7 @@ export function PostDetail() {
     )
   }
 
-  const imageUrl = post.images?.[0]?.url || post.mainImage
+  const imageUrl = post.mainImage || post.imageUrl
   const sellerName = post.user?.name || post.author || 'Sin vendedor'
   const stock = Number(post.stock ?? 0)
   const safeQuantity = Math.min(Math.max(quantity, 1), Math.max(stock, 1))

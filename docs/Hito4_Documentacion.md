@@ -16,7 +16,7 @@ Estructura del proyecto en esta carpeta:
 2. Obtener las credenciales o cadena `DATABASE_URL` del servicio.
 3. Ejecutar el script de creación de tablas usando el archivo:
    - backend/script.sql
-4. Verificar que se crearon las tablas `users`, `posts`, `post_images` y `favorites`.
+4. Verificar que se crearon las tablas `users`, `posts`, `favorites` y `cart_items`.
 
 ## 3. Deploy del backend
 

@@ -216,6 +216,7 @@ describe('API REST Hito 4', () => {
             title: 'Bicicleta',
             description: 'Mountain bike casi nueva',
             price: 100000,
+            image_url: 'https://img.test/bici.jpg',
             status: 'published',
             category: 'deportes',
             location: 'presencial',
@@ -224,12 +225,6 @@ describe('API REST Hito 4', () => {
             user_name: 'Pablo',
             user_avatar: null,
           },
-        ])
-      )
-      .mockResolvedValueOnce(
-        dbResult([
-          { id: 1, url: 'https://img.test/bici-1.jpg' },
-          { id: 2, url: 'https://img.test/bici-2.jpg' },
         ])
       )
       .mockResolvedValueOnce(dbResult([{ '?column?': 1 }]));
@@ -251,10 +246,7 @@ describe('API REST Hito 4', () => {
         name: 'Pablo',
         avatarUrl: null,
       },
-      images: [
-        { id: 1, url: 'https://img.test/bici-1.jpg' },
-        { id: 2, url: 'https://img.test/bici-2.jpg' },
-      ],
+      mainImage: 'https://img.test/bici.jpg',
       isFavorite: true,
     });
   });
@@ -268,6 +260,7 @@ describe('API REST Hito 4', () => {
             title: 'Silla',
             description: 'Silla ergonómica usada',
             price: 30000,
+            image_url: null,
             status: 'draft',
             category: 'hogar',
             location: 'online',
@@ -277,14 +270,13 @@ describe('API REST Hito 4', () => {
             user_avatar: 'https://img.test/carla.jpg',
           },
         ])
-      )
-      .mockResolvedValueOnce(dbResult([]));
+      );
 
     const res = await request(app).get('/api/posts/8');
 
     expect(res.statusCode).toBe(200);
     expect(res.body.isFavorite).toBe(false);
-    expect(queryMock).toHaveBeenCalledTimes(2);
+    expect(queryMock).toHaveBeenCalledTimes(1);
   });
 
   test('POST /api/posts sin token debe responder 401 (ruta protegida)', async () => {
@@ -295,7 +287,7 @@ describe('API REST Hito 4', () => {
     expect(res.statusCode).toBe(401);
   });
 
-  test('POST /api/posts debe validar imágenes inválidas', async () => {
+  test('POST /api/posts debe validar imagen inválida', async () => {
     const res = await request(app)
       .post('/api/posts')
       .set(authHeader(1))
@@ -307,11 +299,11 @@ describe('API REST Hito 4', () => {
         status: 'published',
         category: 'tecnologia',
         location: 'envio',
-        images: ['url-invalida'],
+        imageUrl: 'url-invalida',
       });
 
     expect(res.statusCode).toBe(400);
-    expect(res.body.message).toBe('Cada imagen debe ser una URL válida');
+    expect(res.body.message).toBe('La imagen debe ser una URL válida');
     expect(queryMock).not.toHaveBeenCalled();
   });
 
@@ -325,13 +317,13 @@ describe('API REST Hito 4', () => {
             description: 'Monitor impecable con base ajustable',
             price: 150000,
             stock: 2,
+            image_url: 'https://img.test/monitor.jpg',
             status: 'published',
             category: 'tecnologia',
             location: 'envio',
           },
         ])
-      )
-      .mockResolvedValueOnce(dbResult([]));
+      );
 
     const res = await request(app)
       .post('/api/posts')
@@ -344,7 +336,7 @@ describe('API REST Hito 4', () => {
         status: 'published',
         category: 'tecnologia',
         location: 'envio',
-        images: ['https://img.test/monitor.jpg'],
+        imageUrl: 'https://img.test/monitor.jpg',
       });
 
     expect(res.statusCode).toBe(201);
@@ -362,7 +354,7 @@ describe('API REST Hito 4', () => {
         id: 1,
       },
     });
-    expect(queryMock).toHaveBeenCalledTimes(2);
+    expect(queryMock).toHaveBeenCalledTimes(1);
   });
 
   test('PUT /api/posts/:id sin token debe responder 401', async () => {
@@ -380,15 +372,13 @@ describe('API REST Hito 4', () => {
           description: 'Descripción actualizada y completa',
           price: 9990,
           stock: 4,
+          image_url: 'https://img.test/post-actualizado.jpg',
           status: 'sold',
           category: 'otros',
           location: 'online',
         },
       ])
     );
-    queryMock.mockResolvedValueOnce(dbResult([], { rowCount: 1 }));
-    queryMock.mockResolvedValueOnce(dbResult([], { rowCount: 1 }));
-    queryMock.mockResolvedValueOnce(dbResult([{ url: 'https://img.test/post-actualizado.jpg' }]));
 
     const res = await request(app)
       .put('/api/posts/5')
@@ -401,14 +391,14 @@ describe('API REST Hito 4', () => {
         status: 'sold',
         category: 'otros',
         location: 'online',
-        images: ['https://img.test/post-actualizado.jpg'],
+        imageUrl: 'https://img.test/post-actualizado.jpg',
       });
 
     expect(res.statusCode).toBe(200);
     expect(res.body.title).toBe('Título actualizado');
     expect(res.body.status).toBe('sold');
     expect(res.body.mainImage).toBe('https://img.test/post-actualizado.jpg');
-    expect(queryMock).toHaveBeenCalledTimes(4);
+    expect(queryMock).toHaveBeenCalledTimes(1);
   });
 
   test('PUT /api/posts/:id debe permitir eliminar la imagen principal', async () => {
@@ -421,21 +411,20 @@ describe('API REST Hito 4', () => {
             description: 'Descripción actualizada y completa',
             price: 9990,
             stock: 4,
+            image_url: null,
             status: 'sold',
             category: 'otros',
             location: 'online',
           },
         ])
-      )
-      .mockResolvedValueOnce(dbResult([], { rowCount: 1 }))
-      .mockResolvedValueOnce(dbResult([]));
+      );
 
     const res = await request(app)
       .put('/api/posts/5')
       .set(authHeader(1))
       .send({
         title: 'Título actualizado',
-        images: [],
+        imageUrl: null,
       });
 
     expect(res.statusCode).toBe(200);

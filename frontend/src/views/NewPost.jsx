@@ -129,7 +129,7 @@ export function NewPost() {
         setStatus(post.status || 'published')
         setCategory(post.category || 'general')
         setLocation(post.location || 'online')
-        setImageUrl(post.images?.[0]?.url || post.mainImage || '')
+        setImageUrl(post.mainImage || post.imageUrl || '')
       } catch (err) {
         if (!cancelled) {
           setError(err.message)
@@ -221,7 +221,7 @@ export function NewPost() {
             description: normalizedDescription,
             price: numericPrice,
             stock: numericStock,
-            images: normalizedImageUrl ? [normalizedImageUrl] : [],
+            imageUrl: normalizedImageUrl || null,
             status,
             category,
             location,
@@ -242,11 +242,10 @@ export function NewPost() {
           description: normalizedDescription,
           price: numericPrice,
           stock: numericStock,
-          imageUrl: normalizedImageUrl,
+          imageUrl: normalizedImageUrl || null,
           status,
           category,
           location,
-          images: normalizedImageUrl ? [normalizedImageUrl] : [],
           author: user?.name || 'Yo',
         },
         token,

@@ -30,7 +30,7 @@ function serializeCart(rows) {
 async function getCartRows(userId) {
   const result = await query(
     `SELECT ci.post_id AS "postId", ci.quantity, p.title, p.price, p.stock,
-            (SELECT url FROM post_images WHERE post_id = p.id ORDER BY "order" ASC LIMIT 1) AS "mainImage"
+            p.image_url AS "mainImage"
      FROM cart_items ci
      JOIN posts p ON p.id = ci.post_id
      WHERE ci.user_id = $1
@@ -148,7 +148,7 @@ router.post('/checkout', requireAuth, async (req, res) => {
 
     const cartResult = await client.query(
       `SELECT ci.post_id AS "postId", ci.quantity, p.title, p.price, p.stock,
-              (SELECT url FROM post_images WHERE post_id = p.id ORDER BY "order" ASC LIMIT 1) AS "mainImage"
+              p.image_url AS "mainImage"
        FROM cart_items ci
        JOIN posts p ON p.id = ci.post_id
        WHERE ci.user_id = $1

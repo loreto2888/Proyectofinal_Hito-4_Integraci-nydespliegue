@@ -24,8 +24,8 @@ router.get('/', async (req, res) => {
   try {
     const result = await query(
       `SELECT p.id, p.title, p.description, p.price, p.stock, p.category, p.location,
-              u.id AS user_id, u.name AS user_name,
-              (SELECT url FROM post_images WHERE post_id = p.id ORDER BY "order" ASC LIMIT 1) AS main_image
+              p.image_url AS main_image,
+              u.id AS user_id, u.name AS user_name
        FROM posts p
        JOIN users u ON u.id = p.user_id
        ORDER BY p.created_at DESC`
@@ -59,7 +59,7 @@ router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const postResult = await query(
       `SELECT p.id, p.title, p.description, p.price, p.status, p.category, p.location,
-              p.stock,
+              p.stock, p.image_url,
               u.id AS user_id, u.name AS user_name, u.avatar_url AS user_avatar
        FROM posts p
        JOIN users u ON u.id = p.user_id
@@ -72,11 +72,6 @@ router.get('/:id', optionalAuth, async (req, res) => {
     }
 
     const post = postResult.rows[0];
-
-    const imagesResult = await query(
-      'SELECT id, url FROM post_images WHERE post_id = $1 ORDER BY "order" ASC',
-      [id]
-    );
 
     let isFavorite = false;
     if (req.user?.id) {
@@ -101,7 +96,7 @@ router.get('/:id', optionalAuth, async (req, res) => {
         name: post.user_name,
         avatarUrl: post.user_avatar,
       },
-      images: imagesResult.rows,
+      mainImage: post.image_url,
       isFavorite,
     });
   } catch (err) {
@@ -113,10 +108,11 @@ router.get('/:id', optionalAuth, async (req, res) => {
 router.post('/', requireAuth, async (req, res) => {
   const title = normalizeText(req.body?.title);
   const description = normalizeText(req.body?.description);
-  const { price, stock, images } = req.body;
+  const { price, stock } = req.body;
   const status = normalizeText(req.body?.status);
   const category = normalizeText(req.body?.category);
   const location = normalizeText(req.body?.location);
+  const imageUrl = normalizeText(req.body?.imageUrl);
 
   if (!title) {
     return res.status(400).json({ message: 'El artículo es obligatorio' });
@@ -177,38 +173,24 @@ router.post('/', requireAuth, async (req, res) => {
     return res.status(400).json({ message: 'El stock debe ser un entero mayor o igual a 1' });
   }
 
-  if (images != null) {
-    if (!Array.isArray(images)) {
-      return res.status(400).json({ message: 'Las imágenes deben enviarse como una lista' });
-    }
-
-    const invalidImage = images.find((image) => typeof image !== 'string' || !isValidUrl(image.trim()));
-    if (invalidImage) {
-      return res.status(400).json({ message: 'Cada imagen debe ser una URL válida' });
-    }
+  if (imageUrl && !isValidUrl(imageUrl)) {
+    return res.status(400).json({ message: 'La imagen debe ser una URL válida' });
   }
 
   try {
     const postResult = await query(
-      `INSERT INTO posts (user_id, title, description, price, stock, status, category, location, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
-       RETURNING id, title, description, price, stock, status, category, location`,
-      [req.user.id, title, description, numericPrice, numericStock, status, category, location]
+      `INSERT INTO posts (user_id, title, description, price, stock, image_url, status, category, location, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
+       RETURNING id, title, description, price, stock, image_url, status, category, location`,
+      [req.user.id, title, description, numericPrice, numericStock, imageUrl || null, status, category, location]
     );
 
     const post = postResult.rows[0];
-
-    if (Array.isArray(images) && images.length > 0) {
-      const values = images.map((_, index) => `($1, $${index + 2}, ${index + 1})`).join(',');
-      await query(
-        `INSERT INTO post_images (post_id, url, "order") VALUES ${values}`,
-        [post.id, ...images.map((image) => image.trim())]
-      );
-    }
+    const { image_url: createdImageUrl, ...createdPost } = post;
 
     return res.status(201).json({
-      ...post,
-      mainImage: Array.isArray(images) && images.length > 0 ? images[0] : null,
+      ...createdPost,
+      mainImage: createdImageUrl,
       user: {
         id: req.user.id,
       },
@@ -221,13 +203,14 @@ router.post('/', requireAuth, async (req, res) => {
 
 router.put('/:id', requireAuth, async (req, res) => {
   const id = Number(req.params.id);
+  const hasImageUrl = Object.prototype.hasOwnProperty.call(req.body ?? {}, 'imageUrl');
   const title = req.body?.title != null ? normalizeText(req.body.title) : null;
   const description = req.body?.description != null ? normalizeText(req.body.description) : null;
-  const { price, stock, images } = req.body;
+  const { price, stock } = req.body;
   const status = req.body?.status != null ? normalizeText(req.body.status) : null;
   const category = req.body?.category != null ? normalizeText(req.body.category) : null;
   const location = req.body?.location != null ? normalizeText(req.body.location) : null;
-  const normalizedImages = Array.isArray(images) ? images.map((image) => image.trim()) : null;
+  const imageUrl = hasImageUrl ? normalizeText(req.body?.imageUrl) : null;
 
   if (title !== null) {
     if (!title) {
@@ -275,15 +258,8 @@ router.put('/:id', requireAuth, async (req, res) => {
     return res.status(400).json({ message: 'Selecciona una modalidad válida' });
   }
 
-  if (images != null) {
-    if (!Array.isArray(images)) {
-      return res.status(400).json({ message: 'Las imágenes deben enviarse como una lista' });
-    }
-
-    const invalidImage = normalizedImages.find((image) => !image || !isValidUrl(image));
-    if (invalidImage !== undefined) {
-      return res.status(400).json({ message: 'Cada imagen debe ser una URL válida' });
-    }
+  if (hasImageUrl && imageUrl && !isValidUrl(imageUrl)) {
+    return res.status(400).json({ message: 'La imagen debe ser una URL válida' });
   }
 
   const numericPrice = price != null ? Number(price) : null;
@@ -296,39 +272,26 @@ router.put('/:id', requireAuth, async (req, res) => {
            description = COALESCE($2, description),
            price = COALESCE($3, price),
            stock = COALESCE($4, stock),
-           status = COALESCE($5, status),
-           category = COALESCE($6, category),
-           location = COALESCE($7, location),
-           updated_at = NOW()
-       WHERE id = $8 AND user_id = $9
-       RETURNING id, title, description, price, stock, status, category, location`,
-      [title, description, numericPrice, numericStock, status, category, location, id, req.user.id]
+            status = COALESCE($5, status),
+            category = COALESCE($6, category),
+            location = COALESCE($7, location),
+            image_url = CASE WHEN $8 THEN $9 ELSE image_url END,
+            updated_at = NOW()
+       WHERE id = $10 AND user_id = $11
+       RETURNING id, title, description, price, stock, image_url, status, category, location`,
+      [title, description, numericPrice, numericStock, status, category, location, hasImageUrl, imageUrl || null, id, req.user.id]
     );
 
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Publicación no encontrada o no autorizada' });
     }
 
-    if (normalizedImages !== null) {
-      await query('DELETE FROM post_images WHERE post_id = $1', [id]);
-
-      if (normalizedImages.length > 0) {
-        const values = normalizedImages.map((_, index) => `($1, $${index + 2}, ${index + 1})`).join(',');
-        await query(
-          `INSERT INTO post_images (post_id, url, "order") VALUES ${values}`,
-          [id, ...normalizedImages]
-        );
-      }
-    }
-
-    const imagesResult = await query(
-      'SELECT url FROM post_images WHERE post_id = $1 ORDER BY "order" ASC LIMIT 1',
-      [id]
-    );
+    const updatedPost = result.rows[0];
+    const { image_url: updatedImageUrl, ...serializedPost } = updatedPost;
 
     return res.json({
-      ...result.rows[0],
-      mainImage: imagesResult.rows[0]?.url || null,
+      ...serializedPost,
+      mainImage: updatedImageUrl,
     });
   } catch (err) {
     console.error(err);
