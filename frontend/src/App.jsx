@@ -11,8 +11,23 @@ import { PostDetail } from './views/PostDetail'
 import { Cart } from './views/Cart'
 
 function PrivateRoute({ children }) {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, loading } = useAuth()
+
+  if (loading) {
+    return <p className="text-muted mb-0">Cargando acceso...</p>
+  }
+
   return isAuthenticated ? children : <Navigate to="/login" replace />
+}
+
+function PublicOnlyRoute({ children }) {
+  const { isAuthenticated, loading } = useAuth()
+
+  if (loading) {
+    return <p className="text-muted mb-0">Cargando acceso...</p>
+  }
+
+  return isAuthenticated ? <Navigate to="/" replace /> : children
 }
 
 export default function App() {
@@ -21,8 +36,22 @@ export default function App() {
       <Routes>
         {/* Públicas */}
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/login"
+          element={
+            <PublicOnlyRoute>
+              <Login />
+            </PublicOnlyRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicOnlyRoute>
+              <Register />
+            </PublicOnlyRoute>
+          }
+        />
         <Route path="/posts" element={<Gallery />} />
         <Route path="/posts/:id" element={<PostDetail />} />
 

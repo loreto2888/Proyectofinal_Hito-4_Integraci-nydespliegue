@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { isValidEmail, isValidUrl } from '../utils/validation'
 
 export function Register() {
-  const { register, isAuthenticated, loading: authLoading } = useAuth()
+  const { register } = useAuth()
   const navigate = useNavigate()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -49,12 +49,6 @@ export function Register() {
     }
   }, [avatarUrl, didValidate, email, name, password])
 
-  useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      navigate('/', { replace: true })
-    }
-  }, [authLoading, isAuthenticated, navigate])
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     setDidValidate(true)
@@ -78,10 +72,6 @@ export function Register() {
     } finally {
       setLoading(false)
     }
-  }
-
-  if (authLoading || isAuthenticated) {
-    return <p className="text-muted mb-0">Cargando acceso...</p>
   }
 
   return (

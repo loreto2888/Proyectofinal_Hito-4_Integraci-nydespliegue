@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { isValidEmail } from '../utils/validation'
 
 export function Login() {
-  const { login, isAuthenticated, loading: authLoading } = useAuth()
+  const { login } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [email, setEmail] = useState('')
@@ -38,12 +38,6 @@ export function Login() {
   }, [location.pathname, location.state, navigate])
 
   useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      navigate('/', { replace: true })
-    }
-  }, [authLoading, isAuthenticated, navigate])
-
-  useEffect(() => {
     if (didValidate) {
       setFieldErrors(validateForm())
     }
@@ -72,10 +66,6 @@ export function Login() {
     } finally {
       setLoading(false)
     }
-  }
-
-  if (authLoading || isAuthenticated) {
-    return <p className="text-muted mb-0">Cargando acceso...</p>
   }
 
   return (
