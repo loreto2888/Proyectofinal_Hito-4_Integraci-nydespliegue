@@ -1,0 +1,29 @@
+PENDIENTES DEL REPOSITORIO
+
+1. Implementar vista de Favoritos.
+- Crear una pantalla o pestana dedicada para favoritos.
+- Mostrar las publicaciones guardadas por el usuario.
+- Agregar acceso visible desde la navegacion principal.
+
+2. Completar ordenamiento real de publicaciones.
+- Hacer funcional el selector de orden en la galeria.
+- Permitir ordenar por precio menor a mayor.
+- Permitir ordenar por precio mayor a menor.
+- Permitir ordenar por mas recientes desde la interfaz.
+
+3. Ajustar navegacion para usuarios no autenticados.
+- Limitar la experiencia publica para mostrar solo Iniciar sesion y Registro segun la especificacion.
+- Revisar si Publicaciones debe ocultarse o protegerse cuando no hay sesion.
+
+4. Automatizar cambio de estado a vendido cuando stock llegue a cero.
+- Actualizar el backend para cambiar el estado de la publicacion a sold al agotar stock.
+- Verificar que esto ocurra durante la simulacion de compra y en cualquier otra operacion que reduzca stock a cero.
+
+5. Revisar backend de favoritos para listado enriquecido.
+- Evaluar si GET /api/favorites debe devolver datos completos de publicaciones y no solo ids.
+- Ajustar frontend segun la respuesta elegida.
+
+6. Validar consistencia final contra especificacion.
+- Probar flujo publico: home, login y registro.
+- Probar flujo autenticado: crear, editar, eliminar, favorito, carrito y compra.
+- Confirmar botones de volver al menu principal en todas las secciones.
