@@ -168,7 +168,7 @@ describe('API REST Hito 4', () => {
     });
   });
 
-  test('GET /api/posts debe listar publicaciones mapeadas', async () => {
+  test('GET /api/posts debe listar solo publicaciones publicadas mapeadas', async () => {
     queryMock.mockResolvedValueOnce(
       dbResult([
         {
@@ -190,6 +190,7 @@ describe('API REST Hito 4', () => {
     const res = await request(app).get('/api/posts');
 
     expect(res.statusCode).toBe(200);
+    expect(queryMock.mock.calls[0][0]).toContain("WHERE p.status = 'published'");
     expect(res.body).toEqual([
       {
         id: 11,
@@ -253,7 +254,78 @@ describe('API REST Hito 4', () => {
     });
   });
 
-  test('GET /api/posts/:id sin token debe devolver isFavorite en false', async () => {
+  test('GET /api/posts/mine debe listar todas las publicaciones del usuario autenticado', async () => {
+    queryMock.mockResolvedValueOnce(
+      dbResult([
+        {
+          id: 12,
+          title: 'Teclado',
+          description: 'Mecánico con switches azules',
+          price: 40000,
+          stock: 1,
+          status: 'draft',
+          category: 'tecnologia',
+          location: 'envio',
+          user_id: 1,
+          user_name: 'Usuario Demo',
+          main_image: null,
+        },
+        {
+          id: 13,
+          title: 'Polera',
+          description: 'Publicación vendida en buen estado',
+          price: 8000,
+          stock: 1,
+          status: 'sold',
+          category: 'ropa',
+          location: 'presencial',
+          user_id: 1,
+          user_name: 'Usuario Demo',
+          main_image: 'https://img.test/polera.jpg',
+        },
+      ])
+    );
+
+    const res = await request(app).get('/api/posts/mine').set(authHeader(1));
+
+    expect(res.statusCode).toBe(200);
+    expect(queryMock.mock.calls[0][0]).toContain('WHERE p.user_id = $1');
+    expect(queryMock.mock.calls[0][1]).toEqual([1]);
+    expect(res.body).toEqual([
+      {
+        id: 12,
+        title: 'Teclado',
+        description: 'Mecánico con switches azules',
+        price: 40000,
+        stock: 1,
+        status: 'draft',
+        category: 'tecnologia',
+        location: 'envio',
+        mainImage: null,
+        user: {
+          id: 1,
+          name: 'Usuario Demo',
+        },
+      },
+      {
+        id: 13,
+        title: 'Polera',
+        description: 'Publicación vendida en buen estado',
+        price: 8000,
+        stock: 1,
+        status: 'sold',
+        category: 'ropa',
+        location: 'presencial',
+        mainImage: 'https://img.test/polera.jpg',
+        user: {
+          id: 1,
+          name: 'Usuario Demo',
+        },
+      },
+    ]);
+  });
+
+  test('GET /api/posts/:id sin token no debe exponer publicaciones no publicadas', async () => {
     queryMock
       .mockResolvedValueOnce(
         dbResult([
@@ -276,8 +348,79 @@ describe('API REST Hito 4', () => {
 
     const res = await request(app).get('/api/posts/8');
 
+    expect(res.statusCode).toBe(404);
+    expect(res.body.message).toBe('Publicación no encontrada');
+    expect(queryMock).toHaveBeenCalledTimes(1);
+  });
+
+  test('GET /api/posts/:id debe permitir al dueño ver publicaciones no publicadas', async () => {
+    queryMock
+      .mockResolvedValueOnce(
+        dbResult([
+          {
+            id: 8,
+            title: 'Silla',
+            description: 'Silla ergonómica usada',
+            price: 30000,
+            image_url: null,
+            status: 'draft',
+            category: 'hogar',
+            location: 'online',
+            stock: 3,
+            user_id: 4,
+            user_name: 'Carla',
+            user_avatar: 'https://img.test/carla.jpg',
+          },
+        ])
+      )
+      .mockResolvedValueOnce(dbResult([]));
+
+    const res = await request(app).get('/api/posts/8').set(authHeader(4));
+
     expect(res.statusCode).toBe(200);
-    expect(res.body.isFavorite).toBe(false);
+    expect(res.body).toEqual({
+      id: 8,
+      title: 'Silla',
+      description: 'Silla ergonómica usada',
+      price: 30000,
+      stock: 3,
+      status: 'draft',
+      category: 'hogar',
+      location: 'online',
+      user: {
+        id: 4,
+        name: 'Carla',
+        avatarUrl: 'https://img.test/carla.jpg',
+      },
+      mainImage: null,
+      isFavorite: false,
+    });
+  });
+
+  test('GET /api/posts/:id debe ocultar publicaciones no publicadas a otros usuarios', async () => {
+    queryMock.mockResolvedValueOnce(
+      dbResult([
+        {
+          id: 8,
+          title: 'Silla',
+          description: 'Silla ergonómica usada',
+          price: 30000,
+          image_url: null,
+          status: 'sold',
+          category: 'hogar',
+          location: 'online',
+          stock: 0,
+          user_id: 4,
+          user_name: 'Carla',
+          user_avatar: 'https://img.test/carla.jpg',
+        },
+      ])
+    );
+
+    const res = await request(app).get('/api/posts/8').set(authHeader(1));
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body.message).toBe('Publicación no encontrada');
     expect(queryMock).toHaveBeenCalledTimes(1);
   });
 

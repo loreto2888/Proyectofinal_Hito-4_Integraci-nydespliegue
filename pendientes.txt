@@ -1,29 +1,7 @@
-PENDIENTES DEL REPOSITORIO
+PENDIENTES NUEVOS DEL REPOSITORIO
 
-1. [COMPLETADO] Implementar vista de Favoritos.
-- [x] Crear una pantalla o pestana dedicada para favoritos.
-- [x] Mostrar las publicaciones guardadas por el usuario.
-- [x] Agregar acceso visible desde la navegacion principal.
+1. Ajustar listado general de publicaciones segun especificacion.
+- [x] Mostrar en la galeria solo publicaciones con estado `published`.
 
-2. [COMPLETADO] Completar ordenamiento real de publicaciones.
-- [x] Hacer funcional el selector de orden en la galeria.
-- [x] Permitir ordenar por precio menor a mayor.
-- [x] Permitir ordenar por precio mayor a menor.
-- [x] Permitir ordenar por mas recientes desde la interfaz.
-
-3. [COMPLETADO] Ajustar navegacion para usuarios no autenticados.
-- [x] Limitar la experiencia publica para mostrar solo Iniciar sesion y Registro segun la especificacion.
-- [x] Revisar si Publicaciones debe ocultarse o protegerse cuando no hay sesion.
-
-4. [COMPLETADO] Automatizar cambio de estado a vendido cuando stock llegue a cero.
-- [x] Actualizar el backend para cambiar el estado de la publicacion a sold al agotar stock durante la simulacion de compra.
-- [x] Reflejar el estado sold en el listado y detalle de publicaciones.
-
-5. [COMPLETADO] Revisar backend de favoritos para listado enriquecido.
-- [x] GET /api/favorites devuelve datos completos de publicaciones.
-- [x] Frontend ajustado para consumir el listado enriquecido.
-
-6. Validar consistencia final contra especificacion.
-- Probar flujo publico: home, login y registro.
-- Probar flujo autenticado: crear, editar, eliminar, favorito, carrito y compra.
-- Confirmar botones de volver al menu principal en todas las secciones.
+2. Revisar gestion de mis publicaciones segun especificacion.
+- [ ] Mostrar todos los campos requeridos de la publicacion en la vista de gestion de mis publicaciones.

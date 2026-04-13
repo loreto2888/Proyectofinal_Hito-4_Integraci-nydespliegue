@@ -1,17 +1,47 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { usePosts } from '../contexts/PostsContext'
 import { PostCard } from '../components/common/PostCard'
+import { fetchMyPosts } from '../services/postsService'
 
 export function Profile() {
   const { user, token } = useAuth()
-  const { posts, deletePost } = usePosts()
+  const { deletePost } = usePosts()
+  const [myPosts, setMyPosts] = useState([])
+  const [loadingPosts, setLoadingPosts] = useState(true)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [deletingId, setDeletingId] = useState(null)
 
-  const myPosts = posts.filter((p) => String(p.user?.id) === String(user?.id))
+  useEffect(() => {
+    let cancelled = false
+
+    const loadMyPosts = async () => {
+      setLoadingPosts(true)
+
+      try {
+        const data = await fetchMyPosts(token)
+        if (!cancelled) {
+          setMyPosts(data)
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err.message)
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingPosts(false)
+        }
+      }
+    }
+
+    loadMyPosts()
+
+    return () => {
+      cancelled = true
+    }
+  }, [token])
 
   const handleDelete = async (post) => {
     const confirmed = window.confirm(`¿Seguro que quieres eliminar la publicación "${post.title}"?`)
@@ -26,6 +56,7 @@ export function Profile() {
 
     try {
       await deletePost(post.id, token)
+      setMyPosts((prev) => prev.filter((currentPost) => String(currentPost.id) !== String(post.id)))
       setMessage('Publicación eliminada correctamente.')
     } catch (err) {
       setError(err.message)
@@ -66,7 +97,9 @@ export function Profile() {
         </div>
         {message && <div className="alert alert-success">{message}</div>}
         {error && <div className="alert alert-danger">{error}</div>}
-        {myPosts.length === 0 ? (
+        {loadingPosts ? (
+          <p className="text-muted">Cargando tus publicaciones…</p>
+        ) : myPosts.length === 0 ? (
           <p className="text-muted">Aún no has creado publicaciones.</p>
         ) : (
           <div className="row g-3">

@@ -24,6 +24,16 @@ export async function fetchPosts() {
   return handleJsonResponse(res)
 }
 
+export async function fetchMyPosts(token) {
+  const res = await fetch(`${BASE_URL}/posts/mine`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  return handleJsonResponse(res)
+}
+
 export async function fetchPostById(id, token) {
   const res = await fetch(`${BASE_URL}/posts/${id}`, {
     headers: token

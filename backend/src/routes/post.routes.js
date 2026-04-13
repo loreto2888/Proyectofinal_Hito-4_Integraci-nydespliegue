@@ -20,7 +20,46 @@ function normalizeText(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function serializePostSummary(p) {
+  return {
+    id: p.id,
+    title: p.title,
+    description: p.description,
+    price: p.price,
+    stock: p.stock,
+    status: p.status,
+    category: p.category,
+    location: p.location,
+    mainImage: p.main_image,
+    user: {
+      id: p.user_id,
+      name: p.user_name,
+    },
+  };
+}
+
 router.get('/', async (req, res) => {
+  try {
+    const result = await query(
+      `SELECT p.id, p.title, p.description, p.price, p.stock, p.status, p.category, p.location,
+              p.image_url AS main_image,
+               u.id AS user_id, u.name AS user_name
+       FROM posts p
+       JOIN users u ON u.id = p.user_id
+       WHERE p.status = 'published'
+       ORDER BY p.created_at DESC`
+    );
+
+    const posts = result.rows.map(serializePostSummary);
+
+    return res.json(posts);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Error obteniendo publicaciones' });
+  }
+});
+
+router.get('/mine', requireAuth, async (req, res) => {
   try {
     const result = await query(
       `SELECT p.id, p.title, p.description, p.price, p.stock, p.status, p.category, p.location,
@@ -28,29 +67,15 @@ router.get('/', async (req, res) => {
               u.id AS user_id, u.name AS user_name
        FROM posts p
        JOIN users u ON u.id = p.user_id
-       ORDER BY p.created_at DESC`
+       WHERE p.user_id = $1
+       ORDER BY p.created_at DESC`,
+      [req.user.id]
     );
 
-    const posts = result.rows.map((p) => ({
-      id: p.id,
-      title: p.title,
-        description: p.description,
-        price: p.price,
-        stock: p.stock,
-        status: p.status,
-        category: p.category,
-        location: p.location,
-        mainImage: p.main_image,
-      user: {
-        id: p.user_id,
-        name: p.user_name,
-      },
-    }));
-
-    return res.json(posts);
+    return res.json(result.rows.map(serializePostSummary));
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: 'Error obteniendo publicaciones' });
+    return res.status(500).json({ message: 'Error obteniendo mis publicaciones' });
   }
 });
 
@@ -73,6 +98,11 @@ router.get('/:id', optionalAuth, async (req, res) => {
     }
 
     const post = postResult.rows[0];
+    const isOwner = String(req.user?.id) === String(post.user_id);
+
+    if (post.status !== 'published' && !isOwner) {
+      return res.status(404).json({ message: 'Publicación no encontrada' });
+    }
 
     let isFavorite = false;
     if (req.user?.id) {

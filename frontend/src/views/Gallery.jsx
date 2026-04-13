@@ -6,8 +6,9 @@ import { PostCard } from '../components/common/PostCard'
 export function Gallery() {
   const { posts, loading } = usePosts()
   const [sortBy, setSortBy] = useState('recent')
+  const publishedPosts = posts.filter((post) => post.status === 'published')
 
-  const sortedPosts = [...posts].sort((a, b) => {
+  const sortedPosts = [...publishedPosts].sort((a, b) => {
     if (sortBy === 'price-desc') return Number(b.price || 0) - Number(a.price || 0)
     if (sortBy === 'price-asc') return Number(a.price || 0) - Number(b.price || 0)
     return 0
@@ -29,7 +30,7 @@ export function Gallery() {
         <div className="d-flex justify-content-between align-items-center mb-3 gap-2 flex-wrap">
           <h4>Publicaciones</h4>
           <div className="d-flex align-items-center gap-2 flex-wrap justify-content-end">
-            <span className="text-muted small">Total: {posts.length}</span>
+            <span className="text-muted small">Total: {publishedPosts.length}</span>
             <Link to="/" className="btn btn-outline-secondary btn-sm">
               Volver al menú principal
             </Link>

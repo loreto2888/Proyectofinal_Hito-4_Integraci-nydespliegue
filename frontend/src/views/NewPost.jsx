@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { usePosts } from '../contexts/PostsContext'
 import { PostCard } from '../components/common/PostCard'
-import { fetchPostById } from '../services/postsService'
+import { fetchMyPosts, fetchPostById } from '../services/postsService'
 import { isValidUrl } from '../utils/validation'
 
 const STATUS_OPTIONS = [
@@ -29,7 +29,7 @@ const LOCATION_OPTIONS = [
 
 export function NewPost() {
   const { user, token } = useAuth()
-  const { posts, addPost, updatePost, deletePost } = usePosts()
+  const { addPost, updatePost, deletePost } = usePosts()
   const routeLocation = useLocation()
   const navigate = useNavigate()
   const { id } = useParams()
@@ -51,8 +51,8 @@ export function NewPost() {
   const [managementMessage, setManagementMessage] = useState('')
   const [managementError, setManagementError] = useState('')
   const [deletingId, setDeletingId] = useState(null)
-
-  const myPosts = posts.filter((post) => String(post.user?.id) === String(user?.id))
+  const [myPosts, setMyPosts] = useState([])
+  const [loadingMyPosts, setLoadingMyPosts] = useState(true)
 
   const validateForm = () => {
     const nextErrors = {}
@@ -99,6 +99,36 @@ export function NewPost() {
 
     return nextErrors
   }
+
+  useEffect(() => {
+    let cancelled = false
+
+    const loadMyPosts = async () => {
+      setLoadingMyPosts(true)
+      setManagementError('')
+
+      try {
+        const data = await fetchMyPosts(token)
+        if (!cancelled) {
+          setMyPosts(data)
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setManagementError(err.message)
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingMyPosts(false)
+        }
+      }
+    }
+
+    loadMyPosts()
+
+    return () => {
+      cancelled = true
+    }
+  }, [token])
 
   useEffect(() => {
     if (!isEditMode) {
@@ -176,6 +206,7 @@ export function NewPost() {
 
     try {
       await deletePost(post.id, token)
+      setMyPosts((prev) => prev.filter((currentPost) => String(currentPost.id) !== String(post.id)))
 
       if (String(post.id) === String(id)) {
         navigate('/posts/new', {
@@ -251,6 +282,8 @@ export function NewPost() {
         token,
         user,
       )
+      const updatedMyPosts = await fetchMyPosts(token)
+      setMyPosts(updatedMyPosts)
       navigate('/posts')
     } catch (err) {
       setError(err.message)
@@ -421,7 +454,9 @@ export function NewPost() {
               {managementMessage && <div className="alert alert-success">{managementMessage}</div>}
               {managementError && <div className="alert alert-danger">{managementError}</div>}
 
-              {myPosts.length === 0 ? (
+              {loadingMyPosts ? (
+                <p className="text-muted mb-0">Cargando tus publicaciones…</p>
+              ) : myPosts.length === 0 ? (
                 <p className="text-muted mb-0">Aún no has creado publicaciones.</p>
               ) : (
                 <div className="row g-3">
