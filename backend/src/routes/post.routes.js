@@ -23,7 +23,7 @@ function normalizeText(value) {
 router.get('/', async (req, res) => {
   try {
     const result = await query(
-      `SELECT p.id, p.title, p.description, p.price, p.stock, p.category, p.location,
+      `SELECT p.id, p.title, p.description, p.price, p.stock, p.status, p.category, p.location,
               p.image_url AS main_image,
               u.id AS user_id, u.name AS user_name
        FROM posts p
@@ -34,12 +34,13 @@ router.get('/', async (req, res) => {
     const posts = result.rows.map((p) => ({
       id: p.id,
       title: p.title,
-      description: p.description,
-      price: p.price,
-      stock: p.stock,
-      category: p.category,
-      location: p.location,
-      mainImage: p.main_image,
+        description: p.description,
+        price: p.price,
+        stock: p.stock,
+        status: p.status,
+        category: p.category,
+        location: p.location,
+        mainImage: p.main_image,
       user: {
         id: p.user_id,
         name: p.user_name,

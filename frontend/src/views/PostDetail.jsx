@@ -100,6 +100,7 @@ export function PostDetail() {
   const imageUrl = post.mainImage || post.imageUrl
   const sellerName = post.user?.name || post.author || 'Sin vendedor'
   const stock = Number(post.stock ?? 0)
+  const isSold = post.status === 'sold'
   const safeQuantity = Math.min(Math.max(quantity, 1), Math.max(stock, 1))
   const isOwner = String(post.user?.id) === String(user?.id)
   const favorite = favoritesLoaded ? isFavorite(post.id) : Boolean(post.isFavorite)
@@ -130,6 +131,7 @@ export function PostDetail() {
       <div className="col-md-6">
         {message && <div className="alert alert-success">{message}</div>}
         <h2 className="mb-3">{post.title}</h2>
+        {isSold && <span className="badge bg-dark-subtle text-dark mb-3">Vendido</span>}
         <p className="lead">{post.description}</p>
         <p className="fw-bold fs-5">Precio: ${Number(post.price || 0).toLocaleString('es-CL')}</p>
         <p className="text-muted mb-1">Publicado por: {sellerName}</p>
@@ -144,11 +146,11 @@ export function PostDetail() {
             value={safeQuantity}
             min="1"
             max={Math.max(stock, 1)}
-            disabled={stock < 1 || submitting}
+            disabled={stock < 1 || submitting || isSold}
             onChange={(e) => setQuantity(Number(e.target.value) || 1)}
           />
-          <button className="btn btn-success" disabled={stock < 1 || submitting} onClick={handleAddToCart}>
-            {submitting ? 'Agregando…' : 'Agregar al carrito'}
+          <button className="btn btn-success" disabled={stock < 1 || submitting || isSold} onClick={handleAddToCart}>
+            {submitting ? 'Agregando…' : isSold ? 'Vendido' : 'Agregar al carrito'}
           </button>
           <button
             className={`btn ${favorite ? 'btn-danger' : 'btn-outline-danger'}`}

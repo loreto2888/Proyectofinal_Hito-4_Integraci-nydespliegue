@@ -15,9 +15,9 @@ PENDIENTES DEL REPOSITORIO
 - [x] Limitar la experiencia publica para mostrar solo Iniciar sesion y Registro segun la especificacion.
 - [x] Revisar si Publicaciones debe ocultarse o protegerse cuando no hay sesion.
 
-4. Automatizar cambio de estado a vendido cuando stock llegue a cero.
-- Actualizar el backend para cambiar el estado de la publicacion a sold al agotar stock.
-- Verificar que esto ocurra durante la simulacion de compra y en cualquier otra operacion que reduzca stock a cero.
+4. [COMPLETADO] Automatizar cambio de estado a vendido cuando stock llegue a cero.
+- [x] Actualizar el backend para cambiar el estado de la publicacion a sold al agotar stock durante la simulacion de compra.
+- [x] Reflejar el estado sold en el listado y detalle de publicaciones.
 
 5. [COMPLETADO] Revisar backend de favoritos para listado enriquecido.
 - [x] GET /api/favorites devuelve datos completos de publicaciones.

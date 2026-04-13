@@ -177,6 +177,7 @@ describe('API REST Hito 4', () => {
           description: 'Buen estado',
           price: 450000,
           stock: 2,
+          status: 'published',
           category: 'tecnologia',
           location: 'envio',
           user_id: 9,
@@ -196,6 +197,7 @@ describe('API REST Hito 4', () => {
         description: 'Buen estado',
         price: 450000,
         stock: 2,
+        status: 'published',
         category: 'tecnologia',
         location: 'envio',
         mainImage: 'https://img.test/notebook.jpg',
@@ -752,6 +754,7 @@ describe('API REST Hito 4', () => {
             title: 'Audífonos',
             price: 30000,
             stock: 4,
+            status: 'published',
             mainImage: 'https://img.test/audifonos.jpg',
           },
         ])
@@ -780,10 +783,54 @@ describe('API REST Hito 4', () => {
       totalAmount: 60000,
     });
     expect(clientQueryMock).toHaveBeenCalledWith(
-      'UPDATE posts SET stock = stock - $1, updated_at = NOW() WHERE id = $2',
+      `UPDATE posts
+         SET stock = stock - $1,
+             status = CASE
+               WHEN status = 'published' AND stock - $1 = 0 THEN 'sold'
+               ELSE status
+             END,
+             updated_at = NOW()
+         WHERE id = $2`,
       [2, 10]
     );
     expect(clientQueryMock).toHaveBeenLastCalledWith('COMMIT');
     expect(releaseMock).toHaveBeenCalled();
+  });
+
+  test('POST /api/cart/checkout no debe cambiar a sold si el estado previo no era published', async () => {
+    clientQueryMock
+      .mockResolvedValueOnce(dbResult([]))
+      .mockResolvedValueOnce(
+        dbResult([
+          {
+            postId: 12,
+            quantity: 1,
+            title: 'Producto en borrador',
+            price: 10000,
+            stock: 1,
+            status: 'draft',
+            mainImage: 'https://img.test/draft.jpg',
+          },
+        ])
+      )
+      .mockResolvedValueOnce(dbResult([]))
+      .mockResolvedValueOnce(dbResult([]))
+      .mockResolvedValueOnce(dbResult([]));
+
+    const res = await request(app).post('/api/cart/checkout').set(authHeader(1));
+
+    expect(res.statusCode).toBe(200);
+    expect(clientQueryMock).toHaveBeenCalledWith(
+      `UPDATE posts
+         SET stock = stock - $1,
+             status = CASE
+               WHEN status = 'published' AND stock - $1 = 0 THEN 'sold'
+               ELSE status
+             END,
+             updated_at = NOW()
+         WHERE id = $2`,
+      [1, 12]
+    );
+    expect(clientQueryMock).toHaveBeenLastCalledWith('COMMIT');
   });
 });

@@ -17,6 +17,7 @@ export function PostCard({ post }) {
   const sellerName = post.user?.name || post.author || 'Sin vendedor'
   const stock = Number(post.stock ?? 0)
   const price = Number(post.price || 0)
+  const isSold = post.status === 'sold'
   const favorite = isFavorite(post.id)
   const favoritePending = isPending(post.id)
 
@@ -62,6 +63,7 @@ export function PostCard({ post }) {
       )}
       <div className="card-body d-flex flex-column">
         <h5 className="card-title">{post.title}</h5>
+        {isSold && <span className="badge bg-dark-subtle text-dark align-self-start mb-2">Vendido</span>}
         <p className="card-text small text-muted mb-2">{post.description}</p>
         <p className="fw-semibold mb-1">Precio: ${price.toLocaleString('es-CL')}</p>
         <p className="small text-muted mb-1">Publicado por: {sellerName}</p>
@@ -83,10 +85,10 @@ export function PostCard({ post }) {
           <button
             className="btn btn-sm btn-success"
             type="button"
-            disabled={submitting || stock < 1}
+            disabled={submitting || stock < 1 || isSold}
             onClick={handleAddToCart}
           >
-            {submitting ? 'Agregando…' : 'Agregar al carrito'}
+            {submitting ? 'Agregando…' : isSold ? 'Vendido' : 'Agregar al carrito'}
           </button>
         </div>
       </div>

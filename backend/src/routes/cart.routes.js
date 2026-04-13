@@ -147,7 +147,7 @@ router.post('/checkout', requireAuth, async (req, res) => {
     await client.query('BEGIN');
 
     const cartResult = await client.query(
-      `SELECT ci.post_id AS "postId", ci.quantity, p.title, p.price, p.stock,
+      `SELECT ci.post_id AS "postId", ci.quantity, p.title, p.price, p.stock, p.status,
               p.image_url AS "mainImage"
        FROM cart_items ci
        JOIN posts p ON p.id = ci.post_id
@@ -170,10 +170,17 @@ router.post('/checkout', requireAuth, async (req, res) => {
     }
 
     for (const item of cartResult.rows) {
-      await client.query('UPDATE posts SET stock = stock - $1, updated_at = NOW() WHERE id = $2', [
-        item.quantity,
-        item.postId,
-      ]);
+      await client.query(
+        `UPDATE posts
+         SET stock = stock - $1,
+             status = CASE
+               WHEN status = 'published' AND stock - $1 = 0 THEN 'sold'
+               ELSE status
+             END,
+             updated_at = NOW()
+         WHERE id = $2`,
+        [item.quantity, item.postId]
+      );
     }
 
     await client.query('DELETE FROM cart_items WHERE user_id = $1', [req.user.id]);
