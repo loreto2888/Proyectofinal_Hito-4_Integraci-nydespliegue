@@ -403,7 +403,7 @@ export function NewPost() {
                       : 'Publicar'}
                 </button>
                 <Link to={isEditMode ? `/posts/${id}` : '/'} className="btn btn-outline-secondary">
-                  {isEditMode ? 'Volver al detalle' : 'Volver al menú principal'}
+                  {isEditMode ? 'Volver al detalle' : 'Volver a la página principal'}
                 </Link>
               </div>
             </form>
@@ -415,7 +415,7 @@ export function NewPost() {
                   <p className="text-muted mb-0">Desde esta misma sección también puedes editar o eliminar tus avisos.</p>
                 </div>
                 <Link to="/" className="btn btn-outline-secondary btn-sm">
-                  Volver al menú principal
+                  Volver a la página principal
                 </Link>
               </div>
 
