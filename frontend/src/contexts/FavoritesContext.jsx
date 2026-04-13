@@ -4,9 +4,36 @@ import { useAuth } from './AuthContext'
 
 const FavoritesContext = createContext()
 
+function normalizeFavoritePost(post) {
+  if (!post) {
+    return null
+  }
+
+  const id = post.postId ?? post.id
+
+  if (id == null) {
+    return null
+  }
+
+  return {
+    id,
+    title: post.title,
+    description: post.description,
+    price: post.price,
+    status: post.status,
+    stock: post.stock,
+    category: post.category,
+    location: post.location,
+    mainImage: post.mainImage || post.imageUrl || null,
+    user: post.user,
+    isFavorite: true,
+  }
+}
+
 export function FavoritesProvider({ children }) {
   const { isAuthenticated, token } = useAuth()
   const [favoriteIds, setFavoriteIds] = useState([])
+  const [favoritePosts, setFavoritePosts] = useState([])
   const [loading, setLoading] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const [pendingIds, setPendingIds] = useState([])
@@ -16,6 +43,7 @@ export function FavoritesProvider({ children }) {
 
     if (!isAuthenticated || !token) {
       setFavoriteIds([])
+      setFavoritePosts([])
       setPendingIds([])
       setLoading(false)
       setLoaded(false)
@@ -29,15 +57,18 @@ export function FavoritesProvider({ children }) {
 
       try {
         const favorites = await fetchFavorites(token)
+        const normalizedFavorites = favorites.map(normalizeFavoritePost).filter(Boolean)
 
         if (!cancelled) {
-          setFavoriteIds(favorites.map((favorite) => String(favorite.postId)))
+          setFavoriteIds(normalizedFavorites.map((favorite) => String(favorite.id)))
+          setFavoritePosts(normalizedFavorites)
           setLoaded(true)
         }
       } catch (err) {
         if (!cancelled) {
           console.error(err)
           setFavoriteIds([])
+          setFavoritePosts([])
           setLoaded(false)
         }
       } finally {
@@ -57,7 +88,9 @@ export function FavoritesProvider({ children }) {
   const isFavorite = (postId) => favoriteIds.includes(String(postId))
   const isPending = (postId) => pendingIds.includes(String(postId))
 
-  const toggleFavorite = async (postId) => {
+  const toggleFavorite = async (post) => {
+    const normalizedPost = typeof post === 'object' && post !== null ? normalizeFavoritePost(post) : null
+    const postId = normalizedPost?.id ?? post
     const normalizedId = String(postId)
 
     if (!token) {
@@ -74,11 +107,19 @@ export function FavoritesProvider({ children }) {
       if (favoriteIds.includes(normalizedId)) {
         await removeFavorite(postId, token)
         setFavoriteIds((prev) => prev.filter((id) => id !== normalizedId))
+        setFavoritePosts((prev) => prev.filter((favoritePost) => String(favoritePost.id) !== normalizedId))
         return false
       }
 
       await addFavorite(postId, token)
       setFavoriteIds((prev) => (prev.includes(normalizedId) ? prev : [...prev, normalizedId]))
+      setFavoritePosts((prev) => {
+        if (!normalizedPost || prev.some((favoritePost) => String(favoritePost.id) === normalizedId)) {
+          return prev
+        }
+
+        return [normalizedPost, ...prev]
+      })
       return true
     } finally {
       setPendingIds((prev) => prev.filter((id) => id !== normalizedId))
@@ -88,13 +129,14 @@ export function FavoritesProvider({ children }) {
   const value = useMemo(
     () => ({
       favoriteIds,
+      favoritePosts,
       loading,
       loaded,
       isFavorite,
       isPending,
       toggleFavorite,
     }),
-    [favoriteIds, loading, loaded, pendingIds],
+    [favoriteIds, favoritePosts, loading, loaded, pendingIds],
   )
 
   return <FavoritesContext.Provider value={value}>{children}</FavoritesContext.Provider>

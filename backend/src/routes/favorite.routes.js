@@ -7,11 +7,38 @@ const router = Router();
 router.get('/', requireAuth, async (req, res) => {
   try {
     const result = await query(
-      'SELECT id, user_id AS "userId", post_id AS "postId" FROM favorites WHERE user_id = $1',
+      `SELECT f.id, f.user_id AS "userId", f.post_id AS "postId",
+              p.title, p.description, p.price, p.status, p.stock, p.category, p.location,
+              p.image_url AS "mainImage",
+              u.id AS "postUserId", u.name AS "postUserName", u.avatar_url AS "postUserAvatar"
+       FROM favorites f
+       JOIN posts p ON p.id = f.post_id
+       JOIN users u ON u.id = p.user_id
+       WHERE f.user_id = $1
+       ORDER BY f.id DESC`,
       [req.user.id]
     );
 
-    return res.json(result.rows);
+    return res.json(
+      result.rows.map((favorite) => ({
+        id: favorite.id,
+        userId: favorite.userId,
+        postId: favorite.postId,
+        title: favorite.title,
+        description: favorite.description,
+        price: favorite.price,
+        status: favorite.status,
+        stock: favorite.stock,
+        category: favorite.category,
+        location: favorite.location,
+        mainImage: favorite.mainImage,
+        user: {
+          id: favorite.postUserId,
+          name: favorite.postUserName,
+          avatarUrl: favorite.postUserAvatar,
+        },
+      }))
+    );
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: 'Error obteniendo favoritos' });

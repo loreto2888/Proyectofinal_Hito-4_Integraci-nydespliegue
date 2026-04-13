@@ -49,7 +49,7 @@ export function PostCard({ post }) {
     setError('')
 
     try {
-      await toggleFavorite(post.id)
+      await toggleFavorite(post)
     } catch (err) {
       setError(err.message)
     }

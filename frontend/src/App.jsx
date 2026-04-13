@@ -9,6 +9,7 @@ import { NewPost } from './views/NewPost'
 import { Gallery } from './views/Gallery'
 import { PostDetail } from './views/PostDetail'
 import { Cart } from './views/Cart'
+import { Favorites } from './views/Favorites'
 
 function PrivateRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
@@ -56,6 +57,14 @@ export default function App() {
         <Route path="/posts/:id" element={<PostDetail />} />
 
         {/* Privadas */}
+        <Route
+          path="/favorites"
+          element={
+            <PrivateRoute>
+              <Favorites />
+            </PrivateRoute>
+          }
+        />
         <Route
           path="/cart"
           element={

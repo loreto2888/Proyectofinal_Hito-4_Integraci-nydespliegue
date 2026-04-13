@@ -42,6 +42,11 @@ export function Navbar() {
             {isAuthenticated && (
               <>
                 <li className="nav-item">
+                  <NavLink to="/favorites" className={activeClass}>
+                    Favoritos
+                  </NavLink>
+                </li>
+                <li className="nav-item">
                   <NavLink to="/cart" className={activeClass}>
                     Carrito {totalItems > 0 ? `(${totalItems})` : ''}
                   </NavLink>

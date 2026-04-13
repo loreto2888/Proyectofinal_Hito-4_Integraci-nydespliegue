@@ -454,8 +454,38 @@ describe('API REST Hito 4', () => {
   test('GET /api/favorites debe listar favoritos del usuario', async () => {
     queryMock.mockResolvedValueOnce(
       dbResult([
-        { id: 1, userId: 1, postId: 5 },
-        { id: 2, userId: 1, postId: 9 },
+        {
+          id: 2,
+          userId: 1,
+          postId: 9,
+          title: 'Notebook gamer',
+          description: 'Notebook en excelente estado',
+          price: 900000,
+          status: 'published',
+          stock: 2,
+          category: 'tecnologia',
+          location: 'envio',
+          mainImage: 'https://img.test/notebook.jpg',
+          postUserId: 3,
+          postUserName: 'Loreto',
+          postUserAvatar: 'https://img.test/loreto.jpg',
+        },
+        {
+          id: 1,
+          userId: 1,
+          postId: 5,
+          title: 'Mouse gamer',
+          description: 'Mouse RGB con poco uso',
+          price: 20000,
+          status: 'published',
+          stock: 5,
+          category: 'tecnologia',
+          location: 'online',
+          mainImage: 'https://img.test/mouse.jpg',
+          postUserId: 4,
+          postUserName: 'Camila',
+          postUserAvatar: null,
+        },
       ])
     );
 
@@ -463,8 +493,42 @@ describe('API REST Hito 4', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual([
-      { id: 1, userId: 1, postId: 5 },
-      { id: 2, userId: 1, postId: 9 },
+      {
+        id: 2,
+        userId: 1,
+        postId: 9,
+        title: 'Notebook gamer',
+        description: 'Notebook en excelente estado',
+        price: 900000,
+        status: 'published',
+        stock: 2,
+        category: 'tecnologia',
+        location: 'envio',
+        mainImage: 'https://img.test/notebook.jpg',
+        user: {
+          id: 3,
+          name: 'Loreto',
+          avatarUrl: 'https://img.test/loreto.jpg',
+        },
+      },
+      {
+        id: 1,
+        userId: 1,
+        postId: 5,
+        title: 'Mouse gamer',
+        description: 'Mouse RGB con poco uso',
+        price: 20000,
+        status: 'published',
+        stock: 5,
+        category: 'tecnologia',
+        location: 'online',
+        mainImage: 'https://img.test/mouse.jpg',
+        user: {
+          id: 4,
+          name: 'Camila',
+          avatarUrl: null,
+        },
+      },
     ]);
   });
 

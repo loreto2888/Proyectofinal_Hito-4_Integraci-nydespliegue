@@ -114,7 +114,7 @@ export function PostDetail() {
     setCartError('')
 
     try {
-      await toggleFavorite(post.id)
+      await toggleFavorite(post)
     } catch (err) {
       setCartError(err.message)
     }
