@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { usePosts } from '../contexts/PostsContext'
-import { PostCard } from '../components/common/PostCard'
+import { ManagedPostCard } from '../components/common/ManagedPostCard'
 import { fetchMyPosts, fetchPostById } from '../services/postsService'
 import { isValidUrl } from '../utils/validation'
 
@@ -462,7 +462,7 @@ export function NewPost() {
                 <div className="row g-3">
                   {myPosts.map((post) => (
                     <div className="col-md-6" key={post.id}>
-                      <PostCard post={post} />
+                      <ManagedPostCard post={post} />
                       <div className="mt-2 d-grid gap-2">
                         <Link to={`/posts/${post.id}/edit`} className="btn btn-sm btn-outline-warning">
                           Editar publicación
