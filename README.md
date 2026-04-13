@@ -1,5 +1,8 @@
 # Proyecto Final – Hito 4: Integración y despliegue
 
+Link frontend de despliegue: https://frontend-zo2w.onrender.com
+
+
 Esta carpeta contiene la versión integrada del proyecto Marketplace para el Hito 4.
 
 ## PostgreSQL local con Docker Compose
